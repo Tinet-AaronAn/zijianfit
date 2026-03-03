@@ -1,0 +1,311 @@
+{
+  "planName": "45岁健身计划 - 降血糖+降血脂",
+  "targetAudience": "45岁，需要控制血糖和血脂",
+  "weeklyDuration": "160分钟",
+  "description": "降血糖+降血脂的综合健身计划，包含力量训练、稳态慢跑、间歇跑和全身循环训练",
+  "days": [
+    {
+      "dayOfWeek": 1,
+      "dayName": "周一",
+      "isRestDay": false,
+      "title": "上肢力量 + 稳态慢跑",
+      "totalDuration": 50,
+      "sections": [
+        {
+          "type": "strength",
+          "name": "力量部分",
+          "duration": 20,
+          "exercises": [
+            {
+              "name": "哑铃推举",
+              "sets": 2,
+              "reps": 12,
+              "weight": "10-12kg/只",
+              "restSeconds": 60,
+              "videoUrl": "",
+              "description": "肩部训练，站姿或坐姿",
+              "muscleGroup": "shoulders"
+            },
+            {
+              "name": "高位下拉",
+              "sets": 2,
+              "reps": 12,
+              "weight": "中等",
+              "restSeconds": 60,
+              "videoUrl": "",
+              "description": "背部训练，器械动作",
+              "muscleGroup": "back"
+            },
+            {
+              "name": "器械推胸",
+              "sets": 2,
+              "reps": 12,
+              "weight": "适中",
+              "restSeconds": 60,
+              "videoUrl": "",
+              "description": "胸部训练，器械动作",
+              "muscleGroup": "chest"
+            },
+            {
+              "name": "哑铃弯举",
+              "sets": 2,
+              "reps": 15,
+              "weight": "6-8kg/只",
+              "restSeconds": 45,
+              "videoUrl": "",
+              "description": "二头肌训练，站姿",
+              "muscleGroup": "biceps"
+            },
+            {
+              "name": "绳索下压",
+              "sets": 2,
+              "reps": 15,
+              "weight": "轻重量",
+              "restSeconds": 45,
+              "videoUrl": "",
+              "description": "三头肌训练，器械动作",
+              "muscleGroup": "triceps"
+            }
+          ]
+        },
+        {
+          "type": "cardio",
+          "name": "慢跑部分",
+          "duration": 30,
+          "exercises": [
+            {
+              "name": "热身过渡",
+              "duration": 5,
+              "speed": "6 km/h",
+              "heartRate": "110→120",
+              "description": "逐渐提高心率"
+            },
+            {
+              "name": "稳态慢跑",
+              "duration": 20,
+              "speed": "7.5-8 km/h",
+              "heartRate": "125-135",
+              "description": "保持稳定心率"
+            },
+            {
+              "name": "缓慢降速",
+              "duration": 5,
+              "speed": "5.5→5 km/h",
+              "heartRate": "逐渐降至100",
+              "description": "充分放松"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "dayOfWeek": 2,
+      "dayName": "周二",
+      "isRestDay": true,
+      "title": "休息",
+      "description": "让身体充分恢复"
+    },
+    {
+      "dayOfWeek": 3,
+      "dayName": "周三",
+      "isRestDay": false,
+      "title": "下肢力量 + 稳态慢跑",
+      "totalDuration": 50,
+      "sections": [
+        {
+          "type": "strength",
+          "name": "力量部分",
+          "duration": 25,
+          "exercises": [
+            {
+              "name": "器械腿举",
+              "sets": 3,
+              "reps": 12,
+              "weight": "中等偏重",
+              "restSeconds": 90,
+              "videoUrl": "",
+              "description": "腿部综合训练",
+              "muscleGroup": "legs"
+            },
+            {
+              "name": "罗马尼亚硬拉",
+              "sets": 3,
+              "reps": 12,
+              "weight": "10-12kg哑铃",
+              "restSeconds": 90,
+              "videoUrl": "",
+              "description": "后链肌群训练，注意腰背挺直",
+              "muscleGroup": "back-legs"
+            },
+            {
+              "name": "坐姿腿屈伸",
+              "sets": 2,
+              "reps": 15,
+              "weight": "中等",
+              "restSeconds": 60,
+              "videoUrl": "",
+              "description": "股四头肌训练",
+              "muscleGroup": "quads"
+            },
+            {
+              "name": "站姿提踵",
+              "sets": 2,
+              "reps": 20,
+              "weight": "自重或轻负重",
+              "restSeconds": 45,
+              "videoUrl": "",
+              "description": "小腿训练",
+              "muscleGroup": "calves"
+            },
+            {
+              "name": "平板支撑",
+              "sets": 2,
+              "reps": 1,
+              "duration": 45,
+              "weight": "自重",
+              "restSeconds": 45,
+              "videoUrl": "",
+              "description": "核心训练，保持身体成一条直线",
+              "muscleGroup": "core"
+            }
+          ]
+        },
+        {
+          "type": "cardio",
+          "name": "慢跑部分",
+          "duration": 25,
+          "exercises": [
+            {
+              "name": "热身过渡",
+              "duration": 3,
+              "speed": "6 km/h",
+              "description": "下肢刚练完，慢慢进入"
+            },
+            {
+              "name": "稳态慢跑",
+              "duration": 18,
+              "speed": "7-7.5 km/h",
+              "description": "略低于周一，因下肢疲劳"
+            },
+            {
+              "name": "缓慢降速",
+              "duration": 4,
+              "speed": "5.5 km/h",
+              "description": "充分放松"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "dayOfWeek": 4,
+      "dayName": "周四",
+      "isRestDay": true,
+      "title": "休息",
+      "description": "为周五间歇跑储备能量"
+    },
+    {
+      "dayOfWeek": 5,
+      "dayName": "周五",
+      "isRestDay": false,
+      "title": "间歇跑（纯有氧）",
+      "totalDuration": 30,
+      "sections": [
+        {
+          "type": "hiit",
+          "name": "间歇训练",
+          "duration": 30,
+          "exercises": [
+            {
+              "name": "热身",
+              "duration": 5,
+              "description": "快走/慢跑 6 km/h",
+              "heartRate": "110→120"
+            },
+            {
+              "name": "间歇组",
+              "sets": 6,
+              "duration": 18,
+              "pattern": "快跑1分钟(9-10km/h) + 慢跑2分钟(6km/h)",
+              "heartRate": "140-150→120",
+              "description": "高强度间歇训练"
+            },
+            {
+              "name": "冷身",
+              "duration": 7,
+              "description": "慢走 5 km/h",
+              "heartRate": "逐渐降至100以下"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "dayOfWeek": 6,
+      "dayName": "周六",
+      "isRestDay": true,
+      "title": "休息",
+      "description": "准备周日的全身循环"
+    },
+    {
+      "dayOfWeek": 7,
+      "dayName": "周日",
+      "isRestDay": false,
+      "title": "全身循环训练",
+      "totalDuration": 30,
+      "sections": [
+        {
+          "type": "circuit",
+          "name": "全身循环",
+          "duration": 30,
+          "rounds": 3,
+          "roundDuration": 10,
+          "restBetweenRounds": 120,
+          "exercises": [
+            {
+              "name": "深蹲",
+              "reps": 15,
+              "weight": "徒手或持哑铃",
+              "description": "注意膝盖不超过脚尖",
+              "muscleGroup": "legs"
+            },
+            {
+              "name": "俯卧撑",
+              "reps": 12,
+              "weight": "自重",
+              "description": "跪姿标准均可",
+              "muscleGroup": "chest"
+            },
+            {
+              "name": "哑铃划船",
+              "reps": 12,
+              "weight": "适中",
+              "description": "单臂支撑，背部发力",
+              "muscleGroup": "back"
+            },
+            {
+              "name": "平板支撑",
+              "duration": 30,
+              "weight": "自重",
+              "description": "核心收紧",
+              "muscleGroup": "core"
+            },
+            {
+              "name": "开合跳",
+              "duration": 30,
+              "description": "提升心率",
+              "muscleGroup": "cardio"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "keyReminders": [
+    "最佳运动时间：餐后60-90分钟开始",
+    "45岁心率上限：220-45=175，有氧控制在140以下",
+    "力量训练最后2次要吃力，否则下次加重量",
+    "每周同一时间称重，记录血糖/血脂变化",
+    "睡眠7小时，训练后30分钟内补充蛋白质"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2026-03-03T16:21:00Z",
+  "description": "安老师提供的小红书视频链接",
+  "videos": [
+    {
+      "id": "user-001",
+      "exerciseName": "综合哑铃训练",
+      "platform": "xiaohongshu",
+      "link": "http://xhslink.com/o/AhYax9WmoqD",
+      "title": "新手4分钟哑铃塑形跟练",
+      "providedBy": "安老师",
+      "providedAt": "2026-03-03T16:21:00Z",
+      "status": "pending_mapping",
+      "notes": "可能是综合训练视频，需要确认对应哪些动作"
+    }
+  ],
+  "nextActions": [
+    "1. 确认这个视频对应哪个（或哪些）动作",
+    "2. 获取视频详细信息（作者、时长等）",
+    "3. 更新到 video-resources.json",
+    "4. 等待安老师提供更多视频链接"
+  ]
+}
