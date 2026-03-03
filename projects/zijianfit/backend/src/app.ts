@@ -55,8 +55,8 @@ router.get('/', async (ctx) => {
     description: '面向家庭健身用户的健身计划管理工具',
     endpoints: {
       auth: {
-        login: 'POST /api/auth/wechat',
-        bindPhone: 'POST /api/auth/phone',
+        login: 'POST /api/auth/login',
+        register: 'POST /api/auth/register',
         me: 'GET /api/auth/me',
         refresh: 'POST /api/auth/refresh',
       },

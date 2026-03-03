@@ -13,8 +13,6 @@ process.env.JWT_SECRET = 'test_jwt_secret_key';
 process.env.JWT_EXPIRES_IN = '1h';
 
 // Mock 微信配置
-process.env.WECHAT_APPID = 'test_appid';
-process.env.WECHAT_APPSECRET = 'test_appsecret';
 
 // 全局 Prisma 客户端
 const prisma = new PrismaClient();

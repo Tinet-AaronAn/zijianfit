@@ -62,8 +62,7 @@ zijianfit/
 │   ├── architecture/       # 架构设计
 │   │   ├── ARCHITECTURE.md # 完整架构
 │   │   └── TECH_STACK.md   # 技术栈
-│   └── integration/        # 集成文档
-│       └── WECHAT_SDK_GUIDE.md  # 微信SDK指南
+│   └── integration/        # 集成文档（已清理）
 ├── backend/                 # 🔧 后端服务 (Node.js + Koa)
 │   ├── prisma/
 │   │   ├── schema.prisma   # 数据库模型

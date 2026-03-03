@@ -9,12 +9,6 @@ export const config = {
   port: parseInt(process.env.PORT || '3000', 10),
   nodeEnv: process.env.NODE_ENV || 'development',
 
-  // 微信配置
-  wechat: {
-    appId: process.env.WECHAT_APPID || '',
-    appSecret: process.env.WECHAT_APPSECRET || '',
-  },
-
   // JWT 配置
   jwt: {
     secret: process.env.JWT_SECRET || 'default_jwt_secret',
