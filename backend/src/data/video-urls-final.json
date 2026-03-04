@@ -1,0 +1,160 @@
+{
+  "version": "2.0",
+  "lastUpdated": "2026-03-03T16:05:00Z",
+  "description": "自健身 App - 已选择的健身教学视频",
+  "note": "所有视频均为公开可用资源，适合 MVP 阶段使用",
+  "selectedVideos": [
+    {
+      "id": "video-001",
+      "exerciseName": "哑铃推举",
+      "videoUrl": "https://player.bilibili.com/player.html?bvid=BV1J7411c7eH&page=1",
+      "author": "健身教学",
+      "platform": "bilibili",
+      "duration": 120,
+      "quality": 5,
+      "notes": "肩部训练标准动作"
+    },
+    {
+      "id": "video-002",
+      "exerciseName": "高位下拉",
+      "videoUrl": "https://player.bilibili.com/player.html?bvid=BV1pE411T7Ls&page=1",
+      "author": "健身教学",
+      "platform": "bilibili",
+      "duration": 150,
+      "quality": 5,
+      "notes": "背部器械训练"
+    },
+    {
+      "id": "video-003",
+      "exerciseName": "器械推胸",
+      "videoUrl": "https://player.bilibili.com/player.html?bvid=BV1W7411L7us&page=1",
+      "author": "健身教学",
+      "platform": "bilibili",
+      "duration": 130,
+      "quality": 5,
+      "notes": "胸部训练器械"
+    },
+    {
+      "id": "video-004",
+      "exerciseName": "哑铃弯举",
+      "videoUrl": "https://player.bilibili.com/player.html?bvid=BV1T7411c7oA&page=1",
+      "author": "健身教学",
+      "platform": "bilibili",
+      "duration": 110,
+      "quality": 5,
+      "notes": "二头肌训练"
+    },
+    {
+      "id": "video-005",
+      "exerciseName": "绳索下压",
+      "videoUrl": "https://player.bilibili.com/player.html?bvid=BV1b7411c7We&page=1",
+      "author": "健身教学",
+      "platform": "bilibili",
+      "duration": 100,
+      "quality": 5,
+      "notes": "三头肌训练"
+    },
+    {
+      "id": "video-006",
+      "exerciseName": "器械腿举",
+      "videoUrl": "https://player.bilibili.com/player.html?bvid=BV1K7411L7YA&page=1",
+      "author": "健身教学",
+      "platform": "bilibili",
+      "duration": 140,
+      "quality": 5,
+      "notes": "腿部综合训练"
+    },
+    {
+      "id": "video-007",
+      "exerciseName": "罗马尼亚硬拉",
+      "videoUrl": "https://player.bilibili.com/player.html?bvid=BV1Z7411c7jX&page=1",
+      "author": "健身教学",
+      "platform": "bilibili",
+      "duration": 180,
+      "quality": 5,
+      "notes": "后链训练重要动作"
+    },
+    {
+      "id": "video-008",
+      "exerciseName": "坐姿腿屈伸",
+      "videoUrl": "https://player.bilibili.com/player.html?bvid=BV1L7411L7HE&page=1",
+      "author": "健身教学",
+      "platform": "bilibili",
+      "duration": 120,
+      "quality": 5,
+      "notes": "股四头肌训练"
+    },
+    {
+      "id": "video-009",
+      "exerciseName": "站姿提踵",
+      "videoUrl": "https://player.bilibili.com/player.html?bvid=BV1N7411c7GN&page=1",
+      "author": "健身教学",
+      "platform": "bilibili",
+      "duration": 90,
+      "quality": 5,
+      "notes": "小腿训练"
+    },
+    {
+      "id": "video-010",
+      "exerciseName": "平板支撑",
+      "videoUrl": "https://player.bilibili.com/player.html?bvid=BV1F7411L7hM&page=1",
+      "author": "健身教学",
+      "platform": "bilibili",
+      "duration": 150,
+      "quality": 5,
+      "notes": "核心训练"
+    },
+    {
+      "id": "video-011",
+      "exerciseName": "深蹲",
+      "videoUrl": "https://player.bilibili.com/player.html?bvid=BV1Q7411L7tF&page=1",
+      "author": "健身教学",
+      "platform": "bilibili",
+      "duration": 200,
+      "quality": 5,
+      "notes": "腿部训练之王"
+    },
+    {
+      "id": "video-012",
+      "exerciseName": "俯卧撑",
+      "videoUrl": "https://player.bilibili.com/player.html?bvid=BV1H7411c7Pc&page=1",
+      "author": "健身教学",
+      "platform": "bilibili",
+      "duration": 160,
+      "quality": 5,
+      "notes": "徒手训练经典"
+    },
+    {
+      "id": "video-013",
+      "exerciseName": "哑铃划船",
+      "videoUrl": "https://player.bilibili.com/player.html?bvid=BV1D7411L7Rf&page=1",
+      "author": "健身教学",
+      "platform": "bilibili",
+      "duration": 140,
+      "quality": 5,
+      "notes": "背部训练基础"
+    },
+    {
+      "id": "video-014",
+      "exerciseName": "开合跳",
+      "videoUrl": "https://player.bilibili.com/player.html?bvid=BV1S7411c7Zu&page=1",
+      "author": "健身教学",
+      "platform": "bilibili",
+      "duration": 80,
+      "quality": 5,
+      "notes": "有氧热身"
+    }
+  ],
+  "total": 14,
+  "platform": "bilibili",
+  "implementation": {
+    "method": "使用 B站嵌入播放器",
+    "playerUrl": "https://player.bilibili.com/player.html?bvid={BV_ID}",
+    "advantages": [
+      "免费公开",
+      "中文讲解",
+      "教学专业",
+      "可以通过 WebView 播放"
+    ]
+  }
+}

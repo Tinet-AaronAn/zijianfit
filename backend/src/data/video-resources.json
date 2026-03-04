@@ -1,0 +1,486 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2026-03-03T15:38:00Z",
+  "description": "自健身 App 训练动作视频资源清单",
+  "videoResources": [
+    {
+      "id": "video-001",
+      "exerciseId": "ex-1",
+      "exerciseName": "哑铃推举",
+      "muscleGroup": "shoulders",
+      "dayOfWeek": 1,
+      "searchKeywords": ["哑铃推举", "肩部训练", "站姿推举"],
+      "platforms": {
+        "xiaohongshu": {
+          "searchUrl": "https://www.xiaohongshu.com/search_result?keyword=哑铃推举标准动作",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "douyin": {
+          "searchUrl": "https://www.douyin.com/search/哑铃推举教程",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "bilibili": {
+          "searchUrl": "https://search.bilibili.com/all?keyword=哑铃推举详解",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        }
+      },
+      "tempVideoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "notes": "肩部训练，站姿或坐姿均可"
+    },
+    {
+      "id": "video-002",
+      "exerciseId": "ex-2",
+      "exerciseName": "高位下拉",
+      "muscleGroup": "back",
+      "dayOfWeek": 1,
+      "searchKeywords": ["高位下拉", "背部训练", "器械下拉"],
+      "platforms": {
+        "xiaohongshu": {
+          "searchUrl": "https://www.xiaohongshu.com/search_result?keyword=高位下拉标准动作",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "douyin": {
+          "searchUrl": "https://www.douyin.com/search/高位下拉教程",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "bilibili": {
+          "searchUrl": "https://search.bilibili.com/all?keyword=高位下拉详解",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        }
+      },
+      "tempVideoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "notes": "背部训练，器械动作"
+    },
+    {
+      "id": "video-003",
+      "exerciseId": "ex-3",
+      "exerciseName": "器械推胸",
+      "muscleGroup": "chest",
+      "dayOfWeek": 1,
+      "searchKeywords": ["器械推胸", "胸肌训练", "坐姿推胸"],
+      "platforms": {
+        "xiaohongshu": {
+          "searchUrl": "https://www.xiaohongshu.com/search_result?keyword=器械推胸标准动作",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "douyin": {
+          "searchUrl": "https://www.douyin.com/search/器械推胸教程",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "bilibili": {
+          "searchUrl": "https://search.bilibili.com/all?keyword=器械推胸详解",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        }
+      },
+      "tempVideoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "notes": "胸部训练，器械动作"
+    },
+    {
+      "id": "video-004",
+      "exerciseId": "ex-4",
+      "exerciseName": "哑铃弯举",
+      "muscleGroup": "biceps",
+      "dayOfWeek": 1,
+      "searchKeywords": ["哑铃弯举", "二头肌", "手臂训练"],
+      "platforms": {
+        "xiaohongshu": {
+          "searchUrl": "https://www.xiaohongshu.com/search_result?keyword=哑铃弯举标准动作",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "douyin": {
+          "searchUrl": "https://www.douyin.com/search/哑铃弯举教程",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "bilibili": {
+          "searchUrl": "https://search.bilibili.com/all?keyword=哑铃弯举详解",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        }
+      },
+      "tempVideoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "notes": "二头肌训练，站姿"
+    },
+    {
+      "id": "video-005",
+      "exerciseId": "ex-5",
+      "exerciseName": "绳索下压",
+      "muscleGroup": "triceps",
+      "dayOfWeek": 1,
+      "searchKeywords": ["绳索下压", "三头肌", "手臂训练"],
+      "platforms": {
+        "xiaohongshu": {
+          "searchUrl": "https://www.xiaohongshu.com/search_result?keyword=绳索下压标准动作",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "douyin": {
+          "searchUrl": "https://www.douyin.com/search/绳索下压教程",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "bilibili": {
+          "searchUrl": "https://search.bilibili.com/all?keyword=绳索下压详解",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        }
+      },
+      "tempVideoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "notes": "三头肌训练，器械动作"
+    },
+    {
+      "id": "video-006",
+      "exerciseId": "ex-6",
+      "exerciseName": "器械腿举",
+      "muscleGroup": "legs",
+      "dayOfWeek": 3,
+      "searchKeywords": ["器械腿举", "腿部训练", "倒蹬机"],
+      "platforms": {
+        "xiaohongshu": {
+          "searchUrl": "https://www.xiaohongshu.com/search_result?keyword=器械腿举标准动作",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "douyin": {
+          "searchUrl": "https://www.douyin.com/search/器械腿举教程",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "bilibili": {
+          "searchUrl": "https://search.bilibili.com/all?keyword=器械腿举详解",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        }
+      },
+      "tempVideoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "notes": "腿部综合训练"
+    },
+    {
+      "id": "video-007",
+      "exerciseId": "ex-7",
+      "exerciseName": "罗马尼亚硬拉",
+      "muscleGroup": "back-legs",
+      "dayOfWeek": 3,
+      "searchKeywords": ["罗马尼亚硬拉", "硬拉", "后链训练"],
+      "platforms": {
+        "xiaohongshu": {
+          "searchUrl": "https://www.xiaohongshu.com/search_result?keyword=罗马尼亚硬拉标准动作",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "douyin": {
+          "searchUrl": "https://www.douyin.com/search/罗马尼亚硬拉教程",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "bilibili": {
+          "searchUrl": "https://search.bilibili.com/all?keyword=罗马尼亚硬拉详解",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        }
+      },
+      "tempVideoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "notes": "后链肌群训练，注意腰背挺直"
+    },
+    {
+      "id": "video-008",
+      "exerciseId": "ex-8",
+      "exerciseName": "坐姿腿屈伸",
+      "muscleGroup": "quads",
+      "dayOfWeek": 3,
+      "searchKeywords": ["坐姿腿屈伸", "股四头肌", "腿部训练"],
+      "platforms": {
+        "xiaohongshu": {
+          "searchUrl": "https://www.xiaohongshu.com/search_result?keyword=坐姿腿屈伸标准动作",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "douyin": {
+          "searchUrl": "https://www.douyin.com/search/坐姿腿屈伸教程",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "bilibili": {
+          "searchUrl": "https://search.bilibili.com/all?keyword=坐姿腿屈伸详解",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        }
+      },
+      "tempVideoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "notes": "股四头肌训练"
+    },
+    {
+      "id": "video-009",
+      "exerciseId": "ex-9",
+      "exerciseName": "站姿提踵",
+      "muscleGroup": "calves",
+      "dayOfWeek": 3,
+      "searchKeywords": ["站姿提踵", "小腿训练", "提踵"],
+      "platforms": {
+        "xiaohongshu": {
+          "searchUrl": "https://www.xiaohongshu.com/search_result?keyword=站姿提踵标准动作",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "douyin": {
+          "searchUrl": "https://www.douyin.com/search/站姿提踵教程",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "bilibili": {
+          "searchUrl": "https://search.bilibili.com/all?keyword=站姿提踵详解",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        }
+      },
+      "tempVideoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "notes": "小腿训练"
+    },
+    {
+      "id": "video-010",
+      "exerciseId": "ex-10",
+      "exerciseName": "平板支撑",
+      "muscleGroup": "core",
+      "dayOfWeek": [3, 5],
+      "searchKeywords": ["平板支撑", "核心训练", "腹肌"],
+      "platforms": {
+        "xiaohongshu": {
+          "searchUrl": "https://www.xiaohongshu.com/search_result?keyword=平板支撑标准动作",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "douyin": {
+          "searchUrl": "https://www.douyin.com/search/平板支撑教程",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "bilibili": {
+          "searchUrl": "https://search.bilibili.com/all?keyword=平板支撑详解",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        }
+      },
+      "tempVideoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "notes": "核心训练，保持身体成一条直线"
+    },
+    {
+      "id": "video-011",
+      "exerciseId": "ex-11",
+      "exerciseName": "深蹲",
+      "muscleGroup": "legs",
+      "dayOfWeek": 5,
+      "searchKeywords": ["深蹲", "腿部训练", "徒手深蹲"],
+      "platforms": {
+        "xiaohongshu": {
+          "searchUrl": "https://www.xiaohongshu.com/search_result?keyword=深蹲标准动作",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "douyin": {
+          "searchUrl": "https://www.douyin.com/search/深蹲教程",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "bilibili": {
+          "searchUrl": "https://search.bilibili.com/all?keyword=深蹲详解",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        }
+      },
+      "tempVideoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "notes": "腿部训练，注意膝盖不超过脚尖"
+    },
+    {
+      "id": "video-012",
+      "exerciseId": "ex-12",
+      "exerciseName": "俯卧撑",
+      "muscleGroup": "chest",
+      "dayOfWeek": 5,
+      "searchKeywords": ["俯卧撑", "胸肌训练", "上肢训练"],
+      "platforms": {
+        "xiaohongshu": {
+          "searchUrl": "https://www.xiaohongshu.com/search_result?keyword=俯卧撑标准动作",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "douyin": {
+          "searchUrl": "https://www.douyin.com/search/俯卧撑教程",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "bilibili": {
+          "searchUrl": "https://search.bilibili.com/all?keyword=俯卧撑详解",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        }
+      },
+      "tempVideoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "notes": "胸部训练，跪姿标准均可"
+    },
+    {
+      "id": "video-013",
+      "exerciseId": "ex-13",
+      "exerciseName": "哑铃划船",
+      "muscleGroup": "back",
+      "dayOfWeek": 5,
+      "searchKeywords": ["哑铃划船", "背部训练", "单臂划船"],
+      "platforms": {
+        "xiaohongshu": {
+          "searchUrl": "https://www.xiaohongshu.com/search_result?keyword=哑铃划船标准动作",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "douyin": {
+          "searchUrl": "https://www.douyin.com/search/哑铃划船教程",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "bilibili": {
+          "searchUrl": "https://search.bilibili.com/all?keyword=哑铃划船详解",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        }
+      },
+      "tempVideoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "notes": "背部训练，单臂支撑，背部发力"
+    },
+    {
+      "id": "video-014",
+      "exerciseId": "ex-14",
+      "exerciseName": "开合跳",
+      "muscleGroup": "cardio",
+      "dayOfWeek": 5,
+      "searchKeywords": ["开合跳", "有氧训练", "热身运动"],
+      "platforms": {
+        "xiaohongshu": {
+          "searchUrl": "https://www.xiaohongshu.com/search_result?keyword=开合跳标准动作",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "douyin": {
+          "searchUrl": "https://www.douyin.com/search/开合跳教程",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        },
+        "bilibili": {
+          "searchUrl": "https://search.bilibili.com/all?keyword=开合跳详解",
+          "status": "pending",
+          "videoUrl": "",
+          "author": "",
+          "duration": 0
+        }
+      },
+      "tempVideoUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "notes": "有氧训练，提升心率"
+    }
+  ],
+  "searchProgress": {
+    "total": 14,
+    "completed": 0,
+    "pending": 14,
+    "byPlatform": {
+      "xiaohongshu": 0,
+      "douyin": 0,
+      "bilibili": 0
+    }
+  },
+  "notes": [
+    "当前使用临时测试视频（w3schools.com）",
+    "需要在各个平台搜索真实视频",
+    "优先选择时长 30-60 秒的短视频",
+    "注意版权问题，建议使用 WebView 嵌入",
+    "可以考虑联系创作者获取授权"
+  ]
+}

@@ -1,0 +1,346 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2026-03-03T16:00:00Z",
+  "description": "精选健身教学视频资源 - 优先使用公开可用的专业教学视频",
+  "videoResources": [
+    {
+      "id": "video-001",
+      "exerciseId": "ex-1",
+      "exerciseName": "哑铃推举",
+      "muscleGroup": "shoulders",
+      "dayOfWeek": 1,
+      "curatedVideos": [
+        {
+          "platform": "keep",
+          "source": "Keep App 官方教程",
+          "description": "Keep 是国内最大的健身平台之一，有专业的教学视频",
+          "searchKeyword": "哑铃推举",
+          "recommendation": "在 Keep App 中搜索 '哑铃推举'，选择播放量高的教程",
+          "duration": 60,
+          "quality": "professional",
+          "access": "需要 Keep App，部分免费"
+        },
+        {
+          "platform": "youtube",
+          "source": "健身教学频道",
+          "videoUrl": "https://www.youtube.com/results?search_query=dumbbell+shoulder+press+form",
+          "description": "YouTube 有大量免费的健身教学视频",
+          "duration": 120,
+          "quality": "varies",
+          "access": "免费公开"
+        },
+        {
+          "platform": "bilibili",
+          "source": "B站健身UP主",
+          "searchUrl": "https://search.bilibili.com/all?keyword=哑铃推举教学",
+          "description": "B站有详细的中文健身教程",
+          "duration": 180,
+          "quality": "professional",
+          "access": "免费公开"
+        }
+      ],
+      "selectedVideo": {
+        "platform": "bilibili",
+        "reason": "中文讲解详细，动作示范清晰，免费公开"
+      }
+    },
+    {
+      "id": "video-002",
+      "exerciseId": "ex-2",
+      "exerciseName": "高位下拉",
+      "muscleGroup": "back",
+      "dayOfWeek": 1,
+      "curatedVideos": [
+        {
+          "platform": "keep",
+          "source": "Keep App 官方教程",
+          "searchKeyword": "高位下拉",
+          "recommendation": "在 Keep App 中搜索器械背部训练",
+          "duration": 60,
+          "quality": "professional",
+          "access": "需要 Keep App，部分免费"
+        },
+        {
+          "platform": "bilibili",
+          "source": "B站健身UP主",
+          "searchUrl": "https://search.bilibili.com/all?keyword=高位下拉教学",
+          "duration": 180,
+          "quality": "professional",
+          "access": "免费公开"
+        }
+      ],
+      "selectedVideo": {
+        "platform": "bilibili",
+        "reason": "器械动作讲解详细，中文教程友好"
+      }
+    },
+    {
+      "id": "video-003",
+      "exerciseId": "ex-3",
+      "exerciseName": "器械推胸",
+      "muscleGroup": "chest",
+      "dayOfWeek": 1,
+      "curatedVideos": [
+        {
+          "platform": "bilibili",
+          "source": "B站健身UP主",
+          "searchUrl": "https://search.bilibili.com/all?keyword=器械推胸教学",
+          "duration": 180,
+          "quality": "professional",
+          "access": "免费公开"
+        }
+      ],
+      "selectedVideo": {
+        "platform": "bilibili",
+        "reason": "胸肌训练教学详细"
+      }
+    },
+    {
+      "id": "video-004",
+      "exerciseId": "ex-4",
+      "exerciseName": "哑铃弯举",
+      "muscleGroup": "biceps",
+      "dayOfWeek": 1,
+      "curatedVideos": [
+        {
+          "platform": "bilibili",
+          "searchUrl": "https://search.bilibili.com/all?keyword=哑铃弯举教学",
+          "duration": 120,
+          "quality": "professional",
+          "access": "免费公开"
+        }
+      ],
+      "selectedVideo": {
+        "platform": "bilibili",
+        "reason": "二头肌训练基础动作"
+      }
+    },
+    {
+      "id": "video-005",
+      "exerciseId": "ex-5",
+      "exerciseName": "绳索下压",
+      "muscleGroup": "triceps",
+      "dayOfWeek": 1,
+      "curatedVideos": [
+        {
+          "platform": "bilibili",
+          "searchUrl": "https://search.bilibili.com/all?keyword=绳索下压教学",
+          "duration": 120,
+          "quality": "professional",
+          "access": "免费公开"
+        }
+      ],
+      "selectedVideo": {
+        "platform": "bilibili",
+        "reason": "三头肌器械训练"
+      }
+    },
+    {
+      "id": "video-006",
+      "exerciseId": "ex-6",
+      "exerciseName": "器械腿举",
+      "muscleGroup": "legs",
+      "dayOfWeek": 3,
+      "curatedVideos": [
+        {
+          "platform": "bilibili",
+          "searchUrl": "https://search.bilibili.com/all?keyword=器械腿举教学",
+          "duration": 180,
+          "quality": "professional",
+          "access": "免费公开"
+        }
+      ],
+      "selectedVideo": {
+        "platform": "bilibili",
+        "reason": "腿部综合训练器械"
+      }
+    },
+    {
+      "id": "video-007",
+      "exerciseId": "ex-7",
+      "exerciseName": "罗马尼亚硬拉",
+      "muscleGroup": "back-legs",
+      "dayOfWeek": 3,
+      "curatedVideos": [
+        {
+          "platform": "bilibili",
+          "searchUrl": "https://search.bilibili.com/all?keyword=罗马尼亚硬拉教学",
+          "duration": 240,
+          "quality": "professional",
+          "access": "免费公开"
+        }
+      ],
+      "selectedVideo": {
+        "platform": "bilibili",
+        "reason": "后链训练重要动作，需要详细讲解"
+      }
+    },
+    {
+      "id": "video-008",
+      "exerciseId": "ex-8",
+      "exerciseName": "坐姿腿屈伸",
+      "muscleGroup": "quads",
+      "dayOfWeek": 3,
+      "curatedVideos": [
+        {
+          "platform": "bilibili",
+          "searchUrl": "https://search.bilibili.com/all?keyword=坐姿腿屈伸教学",
+          "duration": 120,
+          "quality": "professional",
+          "access": "免费公开"
+        }
+      ],
+      "selectedVideo": {
+        "platform": "bilibili",
+        "reason": "股四头肌孤立训练"
+      }
+    },
+    {
+      "id": "video-009",
+      "exerciseId": "ex-9",
+      "exerciseName": "站姿提踵",
+      "muscleGroup": "calves",
+      "dayOfWeek": 3,
+      "curatedVideos": [
+        {
+          "platform": "bilibili",
+          "searchUrl": "https://search.bilibili.com/all?keyword=站姿提踵教学",
+          "duration": 90,
+          "quality": "professional",
+          "access": "免费公开"
+        }
+      ],
+      "selectedVideo": {
+        "platform": "bilibili",
+        "reason": "小腿训练基础动作"
+      }
+    },
+    {
+      "id": "video-010",
+      "exerciseId": "ex-10",
+      "exerciseName": "平板支撑",
+      "muscleGroup": "core",
+      "dayOfWeek": [3, 5],
+      "curatedVideos": [
+        {
+          "platform": "bilibili",
+          "searchUrl": "https://search.bilibili.com/all?keyword=平板支撑教学",
+          "duration": 180,
+          "quality": "professional",
+          "access": "免费公开"
+        }
+      ],
+      "selectedVideo": {
+        "platform": "bilibili",
+        "reason": "核心训练经典动作"
+      }
+    },
+    {
+      "id": "video-011",
+      "exerciseId": "ex-11",
+      "exerciseName": "深蹲",
+      "muscleGroup": "legs",
+      "dayOfWeek": 5,
+      "curatedVideos": [
+        {
+          "platform": "bilibili",
+          "searchUrl": "https://search.bilibili.com/all?keyword=深蹲标准动作",
+          "duration": 240,
+          "quality": "professional",
+          "access": "免费公开"
+        }
+      ],
+      "selectedVideo": {
+        "platform": "bilibili",
+        "reason": "腿部训练之王，需要详细讲解"
+      }
+    },
+    {
+      "id": "video-012",
+      "exerciseId": "ex-12",
+      "exerciseName": "俯卧撑",
+      "muscleGroup": "chest",
+      "dayOfWeek": 5,
+      "curatedVideos": [
+        {
+          "platform": "bilibili",
+          "searchUrl": "https://search.bilibili.com/all?keyword=俯卧撑标准动作",
+          "duration": 180,
+          "quality": "professional",
+          "access": "免费公开"
+        }
+      ],
+      "selectedVideo": {
+        "platform": "bilibili",
+        "reason": "徒手训练经典动作"
+      }
+    },
+    {
+      "id": "video-013",
+      "exerciseId": "ex-13",
+      "exerciseName": "哑铃划船",
+      "muscleGroup": "back",
+      "dayOfWeek": 5,
+      "curatedVideos": [
+        {
+          "platform": "bilibili",
+          "searchUrl": "https://search.bilibili.com/all?keyword=哑铃划船教学",
+          "duration": 180,
+          "quality": "professional",
+          "access": "免费公开"
+        }
+      ],
+      "selectedVideo": {
+        "platform": "bilibili",
+        "reason": "背部训练基础动作"
+      }
+    },
+    {
+      "id": "video-014",
+      "exerciseId": "ex-14",
+      "exerciseName": "开合跳",
+      "muscleGroup": "cardio",
+      "dayOfWeek": 5,
+      "curatedVideos": [
+        {
+          "platform": "bilibili",
+          "searchUrl": "https://search.bilibili.com/all?keyword=开合跳教学",
+          "duration": 90,
+          "quality": "professional",
+          "access": "免费公开"
+        }
+      ],
+      "selectedVideo": {
+        "platform": "bilibili",
+        "reason": "有氧热身经典动作"
+      }
+    }
+  ],
+  "recommendations": {
+    "primary": "B站健身教学视频",
+    "reasons": [
+      "免费公开，无需付费",
+      "中文讲解，用户友好",
+      "教学详细，专业度高",
+      "可以通过 WebView 嵌入播放",
+      "版权风险较低（标注来源）"
+    ],
+    "alternative": "Keep App 官方教程",
+    "note": "如果需要更专业的视频，可以考虑联系健身教练或机构获取授权"
+  },
+  "implementation": {
+    "method": "WebView 嵌入",
+    "advantages": [
+      "无版权问题（保留作者信息）",
+      "播放流畅",
+      "支持原平台功能"
+    ],
+    "steps": [
+      "1. 在 B站搜索对应动作",
+      "2. 选择播放量高、评价好的视频",
+      "3. 复制视频链接",
+      "4. 使用 WebView 加载视频页面",
+      "5. 在 App 中展示"
+    ]
+  }
+}
