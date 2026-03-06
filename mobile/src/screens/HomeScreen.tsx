@@ -41,7 +41,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const loadPlans = async () => {
     try {
       setIsLoading(true);
-      const response = await api.get('/plans/my');
+      const response = await api.get('/plans/current');
       if (response.success) {
         const plans = response.data;
         setWeeklyPlans(plans);
