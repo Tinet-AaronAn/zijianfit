@@ -42,8 +42,8 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     try {
       setIsLoading(true);
       const response = await api.get('/plans/current');
-      if (response.success) {
-        const plans = response.data;
+      if (response.success && response.data && response.data.days) {
+        const plans = response.data.days;
         setWeeklyPlans(plans);
         
         // 找到今天的计划
@@ -99,7 +99,10 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         {todayPlan ? (
           <TouchableOpacity
             style={styles.todayCard}
-            onPress={() => navigation.navigate('WorkoutDetail', { planId: todayPlan.id })}
+            onPress={() => navigation.navigate('WorkoutDetail', { 
+              planId: todayPlan.planId,
+              dayOfWeek: todayPlan.dayOfWeek 
+            })}
           >
             <View style={styles.todayCardContent}>
               <Text style={styles.todayTitle}>{todayPlan.title}</Text>
@@ -135,7 +138,10 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
                 styles.dayCard,
                 plan.dayOfWeek === today && styles.dayCardToday,
               ]}
-              onPress={() => navigation.navigate('WorkoutDetail', { planId: plan.id })}
+              onPress={() => navigation.navigate('WorkoutDetail', { 
+                planId: plan.planId,
+                dayOfWeek: plan.dayOfWeek 
+              })}
             >
               <Text
                 style={[

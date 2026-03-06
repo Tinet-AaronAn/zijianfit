@@ -38,8 +38,9 @@
 
 | 阶段 | 负责人 | 状态 | 预计完成 |
 |------|--------|------|----------|
-| 视频资源 | 安老师 | ⏳ 7% (1/14) | Day 2 |
-| 真机测试 | 安老师 | ⏳ 准备中 | Day 2 |
+| 集成测试 | 陆测 + 随行 | ✅ 核心功能通过 | Day 2 |
+| 视频资源 | 安老师 | ⏳ 7% (1/14) | Day 3 |
+| Bug 修复 | 行兵 | ✅ 2 个已修复 | Day 2 |
 
 ---
 
@@ -264,6 +265,31 @@ npm run android
 ---
 
 ## ⚠️ 重要说明
+
+### 集成测试 Bug 修复（2026-03-06）
+
+**修复的严重 Bug**:
+
+1. **Bug #1: HomeScreen 渲染崩溃** ✅
+   - **问题**: `weeklyPlans.map is not a function`
+   - **原因**: API 返回数据格式错误使用
+   - **修复**: 正确提取 `response.data.days` 数组
+   - **文件**: `mobile/src/screens/HomeScreen.tsx`
+
+2. **Bug #2: 训练详情页加载失败** ✅
+   - **问题**: `GET /api/plans/undefined 404`
+   - **原因**: API 返回缺少 `id` 和 `planId` 字段
+   - **修复**: 
+     - 后端: 添加 DayPlan ID 和 planId 到返回数据
+     - 前端: 使用正确的 API 路由 `/plans/${planId}/days/${dayOfWeek}`
+   - **文件**: 
+     - `backend/src/controllers/plans.controller.ts`
+     - `mobile/src/screens/HomeScreen.tsx`
+     - `mobile/src/screens/WorkoutDetailScreen.tsx`
+
+**测试结果**: ✅ 核心功能正常
+
+---
 
 ### 登录方式变更（2026-03-03）
 - ❌ 移除微信登录

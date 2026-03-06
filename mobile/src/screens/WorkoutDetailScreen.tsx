@@ -35,19 +35,19 @@ interface WorkoutPlan {
 }
 
 const WorkoutDetailScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { planId } = route.params as { planId: string };
+  const { planId, dayOfWeek } = route.params as { planId: string; dayOfWeek: number };
   const [plan, setPlan] = useState<WorkoutPlan | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
 
   useEffect(() => {
     loadPlan();
-  }, [planId]);
+  }, [planId, dayOfWeek]);
 
   const loadPlan = async () => {
     try {
       setIsLoading(true);
-      const response = await api.get(`/plans/${planId}`);
+      const response = await api.get(`/plans/${planId}/days/${dayOfWeek}`);
       if (response.success) {
         setPlan(response.data);
       }

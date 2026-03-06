@@ -63,6 +63,8 @@ export async function getCurrentPlan(ctx: Context) {
         dayDate.setDate(dayDate.getDate() - dayDate.getDay() + dayPlan.dayOfWeek);
 
         return {
+          id: dayPlan.id,  // 添加 DayPlan 的 ID
+          planId: dayPlan.planId,  // 添加所属计划的 ID
           dayOfWeek: dayPlan.dayOfWeek,
           date: dayDate.toISOString().split('T')[0],
           isRestDay: dayPlan.isRestDay,
@@ -87,6 +89,8 @@ export async function getCurrentPlan(ctx: Context) {
       dayDate.setDate(dayDate.getDate() - dayDate.getDay() + dayPlan.dayOfWeek);
 
       return {
+        id: dayPlan.id,  // 添加 DayPlan 的 ID
+        planId: dayPlan.planId,  // 添加所属计划的 ID
         dayOfWeek: dayPlan.dayOfWeek,
         date: dayDate.toISOString().split('T')[0],
         isRestDay: dayPlan.isRestDay,
