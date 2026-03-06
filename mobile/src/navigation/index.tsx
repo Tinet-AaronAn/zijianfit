@@ -3,18 +3,18 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text } from 'react-native';
-import { colors } from './constants';
+import { colors } from '../constants';
 
 // Screens
-import LoginScreen from './screens/LoginScreen';
-import RegisterScreen from './screens/RegisterScreen';
-import HomeScreen from './screens/HomeScreen';
-import WorkoutDetailScreen from './screens/WorkoutDetailScreen';
-import WorkoutSessionScreen from './screens/WorkoutSessionScreen';
-import StatsScreen from './screens/StatsScreen';
+import LoginScreen from '../screens/LoginScreen';
+import RegisterScreen from '../screens/RegisterScreen';
+import HomeScreen from '../screens/HomeScreen';
+import WorkoutDetailScreen from '../screens/WorkoutDetailScreen';
+import WorkoutSessionScreen from '../screens/WorkoutSessionScreen';
+import StatsScreen from '../screens/StatsScreen';
 
 // Store
-import { useAuthStore } from './stores/useAuthStore';
+import { useAuthStore } from '../stores/useAuthStore';
 
 export type RootStackParamList = {
   Auth: undefined;
