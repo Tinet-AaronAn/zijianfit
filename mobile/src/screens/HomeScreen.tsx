@@ -17,11 +17,18 @@ type Props = NativeStackScreenProps<any, 'Home'>;
 
 interface WorkoutPlan {
   id: string;
+  planId: string;
   dayOfWeek: number;
+  dayName?: string;
+  date?: string;
+  isRestDay?: boolean;
   title: string;
-  description: string;
-  duration: number;
-  exercises: any[];
+  description?: string;
+  label?: string;
+  duration?: number;
+  totalDuration?: number;
+  exerciseCount?: number;
+  exercises?: any[];
 }
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
@@ -108,9 +115,9 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
               <Text style={styles.todayTitle}>{todayPlan.title}</Text>
               <Text style={styles.todayDescription}>{todayPlan.description}</Text>
               <View style={styles.todayMeta}>
-                <Text style={styles.todayMetaText}>⏱️ {todayPlan.duration}分钟</Text>
+                <Text style={styles.todayMetaText}>⏱️ {todayPlan.totalDuration || todayPlan.duration || 0}分钟</Text>
                 <Text style={styles.todayMetaText}>
-                  💪 {todayPlan.exercises?.length || 0}个动作
+                  💪 {todayPlan.exerciseCount || todayPlan.exercises?.length || 0}个动作
                 </Text>
               </View>
             </View>
@@ -163,7 +170,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
                     plan.dayOfWeek === today && styles.dayIndicatorTextToday,
                   ]}
                 >
-                  {plan.exercises?.length || 0}
+                  {plan.exerciseCount || plan.exercises?.length || 0}
                 </Text>
               </View>
             </TouchableOpacity>
