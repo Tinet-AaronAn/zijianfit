@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Alert,
-  ActivityIndicator,
+  ScrollView,
+  Dimensions,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Video from 'react-native-video';
@@ -23,101 +24,65 @@ interface Exercise {
   reps?: number;
 }
 
+const { width } = Dimensions.get('window');
+
 const WorkoutSessionScreen: React.FC<Props> = ({ route, navigation }) => {
   const { exercises } = route.params as { planId: string; exercises: Exercise[] };
   
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
+  const [completedExercises, setCompletedExercises] = useState<Set<string>>(new Set());
   const [isCompleted, setIsCompleted] = useState(false);
-  const [completedExercises, setCompletedExercises] = useState<Set<number>>(new Set());
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const videoRef = useRef<Video>(null);
 
   const currentExercise = exercises[currentExerciseIndex];
   const isLastExercise = currentExerciseIndex === exercises.length - 1;
-
-  useEffect(() => {
-    if (currentExercise) {
-      setTimeLeft(currentExercise.duration);
-    }
-  }, [currentExerciseIndex]);
-
-  useEffect(() => {
-    if (!isPaused && !isCompleted && timeLeft > 0) {
-      timerRef.current = setTimeout(() => {
-        setTimeLeft(timeLeft - 1);
-      }, 1000);
-    } else if (timeLeft === 0 && !isCompleted) {
-      handleExerciseComplete();
-    }
-
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
-  }, [timeLeft, isPaused, isCompleted]);
+  const completedCount = completedExercises.size;
+  const allCompleted = completedCount === exercises.length;
 
   const handleExerciseComplete = () => {
-    setCompletedExercises(new Set([...completedExercises, currentExerciseIndex]));
+    if (!currentExercise) return;
 
-    if (isLastExercise) {
+    // 标记当前动作完成
+    const newCompleted = new Set(completedExercises);
+    newCompleted.add(currentExercise.id);
+    setCompletedExercises(newCompleted);
+
+    // 如果所有动作都完成了
+    if (newCompleted.size === exercises.length) {
       setIsCompleted(true);
-    } else {
-      Alert.alert(
-        '动作完成！',
-        '休息10秒后开始下一个动作',
-        [
-          {
-            text: '立即开始',
-            onPress: () => {
-              setCurrentExerciseIndex(currentExerciseIndex + 1);
-            },
-          },
-          {
-            text: '休息10秒',
-            onPress: () => {
-              setIsPaused(true);
-              setTimeout(() => {
-                setIsPaused(false);
-                setCurrentExerciseIndex(currentExerciseIndex + 1);
-              }, 10000);
-            },
-          },
-        ]
-      );
+    } else if (!isLastExercise) {
+      // 自动切换到下一个未完成的动作
+      const nextIndex = findNextIncompleteIndex(currentExerciseIndex + 1, newCompleted);
+      if (nextIndex !== -1) {
+        setCurrentExerciseIndex(nextIndex);
+      }
     }
   };
 
-  const handlePause = () => {
-    setIsPaused(!isPaused);
+  const findNextIncompleteIndex = (startIndex: number, completed: Set<string>): number => {
+    // 从 startIndex 开始找
+    for (let i = startIndex; i < exercises.length; i++) {
+      if (!completed.has(exercises[i].id)) {
+        return i;
+      }
+    }
+    // 从头开始找
+    for (let i = 0; i < startIndex; i++) {
+      if (!completed.has(exercises[i].id)) {
+        return i;
+      }
+    }
+    return -1;
   };
 
-  const handleSkip = () => {
-    Alert.alert(
-      '跳过当前动作',
-      '确定要跳过这个动作吗？',
-      [
-        { text: '取消', style: 'cancel' },
-        {
-          text: '确定',
-          onPress: () => {
-            if (isLastExercise) {
-              setIsCompleted(true);
-            } else {
-              setCurrentExerciseIndex(currentExerciseIndex + 1);
-            }
-          },
-        },
-      ]
-    );
+  const handleExerciseSelect = (index: number) => {
+    setCurrentExerciseIndex(index);
   };
 
   const handleFinish = () => {
     Alert.alert(
       '🎉 训练完成！',
-      `恭喜你完成了今天的训练！\n共完成 ${completedExercises.size}/${exercises.length} 个动作`,
+      `恭喜你完成了今天的训练！\n共完成 ${completedCount}/${exercises.length} 个动作`,
       [
         {
           text: '返回首页',
@@ -131,10 +96,13 @@ const WorkoutSessionScreen: React.FC<Props> = ({ route, navigation }) => {
     );
   };
 
-  const formatTime = (seconds: number) => {
+  const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    if (mins === 0) {
+      return `${secs}秒`;
+    }
+    return secs > 0 ? `${mins}分${secs}秒` : `${mins}分钟`;
   };
 
   if (!currentExercise) {
@@ -145,7 +113,7 @@ const WorkoutSessionScreen: React.FC<Props> = ({ route, navigation }) => {
     );
   }
 
-  if (isCompleted) {
+  if (isCompleted || allCompleted) {
     return (
       <View style={styles.completedContainer}>
         <Text style={styles.completedEmoji}>🎉</Text>
@@ -162,37 +130,41 @@ const WorkoutSessionScreen: React.FC<Props> = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* 进度条 */}
-      <View style={styles.progressContainer}>
+      {/* 顶部进度条 */}
+      <View style={styles.header}>
         <View style={styles.progressBar}>
           <View
             style={[
               styles.progressFill,
-              { width: `${((currentExerciseIndex + 1) / exercises.length) * 100}%` },
+              { width: `${(completedCount / exercises.length) * 100}%` },
             ]}
           />
         </View>
         <Text style={styles.progressText}>
-          {currentExerciseIndex + 1} / {exercises.length}
+          {completedCount} / {exercises.length} 完成
         </Text>
       </View>
 
-      {/* 视频演示 */}
-      {currentExercise.videoUrl && (
+      {/* 视频播放器 */}
+      {currentExercise.videoUrl ? (
         <View style={styles.videoContainer}>
           <Video
             ref={videoRef}
             source={{ uri: currentExercise.videoUrl }}
             style={styles.video}
             controls={true}
-            paused={isPaused}
+            paused={false}
             resizeMode="cover"
             repeat={true}
           />
         </View>
+      ) : (
+        <View style={styles.noVideoContainer}>
+          <Text style={styles.noVideoText}>暂无视频</Text>
+        </View>
       )}
 
-      {/* 动作信息 */}
+      {/* 当前动作信息 */}
       <View style={styles.exerciseInfo}>
         <Text style={styles.exerciseName}>{currentExercise.name}</Text>
         {currentExercise.sets && currentExercise.reps && (
@@ -200,55 +172,87 @@ const WorkoutSessionScreen: React.FC<Props> = ({ route, navigation }) => {
             {currentExercise.sets}组 × {currentExercise.reps}次
           </Text>
         )}
+        {currentExercise.duration > 0 && (
+          <Text style={styles.exerciseDuration}>
+            时长：{formatDuration(currentExercise.duration)}
+          </Text>
+        )}
         {currentExercise.description && (
           <Text style={styles.exerciseDescription}>{currentExercise.description}</Text>
         )}
       </View>
 
-      {/* 倒计时 */}
-      <View style={styles.timerContainer}>
-        <Text style={styles.timerLabel}>剩余时间</Text>
-        <Text style={styles.timerValue}>{formatTime(timeLeft)}</Text>
-      </View>
-
-      {/* 控制按钮 */}
-      <View style={styles.controls}>
-        <TouchableOpacity style={styles.controlButton} onPress={handlePause}>
-          <Text style={styles.controlButtonIcon}>{isPaused ? '▶️' : '⏸️'}</Text>
-          <Text style={styles.controlButtonText}>{isPaused ? '继续' : '暂停'}</Text>
-        </TouchableOpacity>
-
+      {/* 完成按钮 */}
+      <View style={styles.actionContainer}>
         <TouchableOpacity
-          style={[styles.controlButton, styles.controlButtonSecondary]}
-          onPress={handleSkip}
+          style={[
+            styles.completeButton,
+            completedExercises.has(currentExercise.id) && styles.completeButtonDisabled,
+          ]}
+          onPress={handleExerciseComplete}
+          disabled={completedExercises.has(currentExercise.id)}
         >
-          <Text style={styles.controlButtonIcon}>⏭️</Text>
-          <Text style={styles.controlButtonText}>跳过</Text>
+          <Text style={styles.completeButtonText}>
+            {completedExercises.has(currentExercise.id) ? '✓ 已完成' : '✓ 完成这个动作'}
+          </Text>
         </TouchableOpacity>
       </View>
 
-      {/* 动作列表 */}
-      <View style={styles.exerciseList}>
-        {exercises.map((exercise, index) => (
-          <View
-            key={exercise.id || index}
-            style={[
-              styles.exerciseListItem,
-              index === currentExerciseIndex && styles.exerciseListItemActive,
-              completedExercises.has(index) && styles.exerciseListItemCompleted,
-            ]}
-          >
-            <Text
-              style={[
-                styles.exerciseListItemText,
-                completedExercises.has(index) && styles.exerciseListItemTextCompleted,
-              ]}
-            >
-              {completedExercises.has(index) ? '✓' : index + 1}
-            </Text>
-            <Text style={styles.exerciseListItemName}>{exercise.name}</Text>
-          </View>
-        ))}
+      {/* 底部动作列表 */}
+      <View style={styles.exerciseListContainer}>
+        <Text style={styles.exerciseListTitle}>动作列表</Text>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.exerciseList}
+        >
+          {exercises.map((exercise, index) => {
+            const isCompleted = completedExercises.has(exercise.id);
+            const isActive = index === currentExerciseIndex;
+            
+            return (
+              <TouchableOpacity
+                key={exercise.id || index}
+                style={[
+                  styles.exerciseCard,
+                  isActive && styles.exerciseCardActive,
+                  isCompleted && styles.exerciseCardCompleted,
+                ]}
+                onPress={() => handleExerciseSelect(index)}
+              >
+                <View
+                  style={[
+                    styles.exerciseCardNumber,
+                    isCompleted && styles.exerciseCardNumberCompleted,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.exerciseCardNumberText,
+                      isCompleted && styles.exerciseCardNumberTextCompleted,
+                    ]}
+                  >
+                    {isCompleted ? '✓' : index + 1}
+                  </Text>
+                </View>
+                <Text
+                  style={[
+                    styles.exerciseCardName,
+                    isActive && styles.exerciseCardNameActive,
+                  ]}
+                  numberOfLines={2}
+                >
+                  {exercise.name}
+                </Text>
+                {isCompleted && (
+                  <View style={styles.completedBadge}>
+                    <Text style={styles.completedBadgeText}>✓</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
       </View>
     </View>
   );
@@ -302,27 +306,27 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: colors.text.inverse,
   },
-  progressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  header: {
     padding: spacing.md,
     backgroundColor: colors.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
   progressBar: {
-    flex: 1,
     height: 8,
     backgroundColor: colors.border,
     borderRadius: 4,
     overflow: 'hidden',
+    marginBottom: spacing.sm,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: colors.primary,
+    backgroundColor: colors.success,
   },
   progressText: {
-    marginLeft: spacing.md,
     fontSize: fontSize.sm,
     color: colors.text.secondary,
+    textAlign: 'center',
     fontWeight: '600',
   },
   videoContainer: {
@@ -333,6 +337,17 @@ const styles = StyleSheet.create({
   video: {
     width: '100%',
     height: '100%',
+  },
+  noVideoContainer: {
+    width: '100%',
+    aspectRatio: 16 / 9,
+    backgroundColor: colors.card,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noVideoText: {
+    fontSize: fontSize.lg,
+    color: colors.text.secondary,
   },
   exerciseInfo: {
     padding: spacing.lg,
@@ -350,85 +365,119 @@ const styles = StyleSheet.create({
     fontSize: fontSize.lg,
     color: colors.primary,
     fontWeight: '600',
-    marginBottom: spacing.sm,
+    marginBottom: spacing.xs,
+  },
+  exerciseDuration: {
+    fontSize: fontSize.base,
+    color: colors.text.secondary,
+    marginBottom: spacing.xs,
   },
   exerciseDescription: {
     fontSize: fontSize.base,
     color: colors.text.secondary,
     lineHeight: 24,
+    marginTop: spacing.sm,
   },
-  timerContainer: {
-    alignItems: 'center',
-    paddingVertical: spacing.xl,
-    backgroundColor: colors.card,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  timerLabel: {
-    fontSize: fontSize.sm,
-    color: colors.text.secondary,
-    marginBottom: spacing.sm,
-  },
-  timerValue: {
-    fontSize: fontSize['4xl'] * 2,
-    fontWeight: '700',
-    color: colors.primary,
-  },
-  controls: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+  actionContainer: {
     padding: spacing.lg,
     backgroundColor: colors.card,
   },
-  controlButton: {
+  completeButton: {
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.md,
+    padding: spacing.lg,
     alignItems: 'center',
-    padding: spacing.md,
   },
-  controlButtonSecondary: {
-    opacity: 0.6,
+  completeButtonDisabled: {
+    backgroundColor: colors.success,
+    opacity: 0.8,
   },
-  controlButtonIcon: {
-    fontSize: 32,
-    marginBottom: spacing.sm,
+  completeButtonText: {
+    fontSize: fontSize.lg,
+    fontWeight: '600',
+    color: colors.text.inverse,
   },
-  controlButtonText: {
-    fontSize: fontSize.sm,
+  exerciseListContainer: {
+    flex: 1,
+    backgroundColor: colors.card,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  exerciseListTitle: {
+    fontSize: fontSize.base,
+    fontWeight: '600',
     color: colors.text.secondary,
+    padding: spacing.md,
+    paddingBottom: spacing.sm,
   },
   exerciseList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    padding: spacing.md,
-    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.md,
   },
-  exerciseListItem: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.card,
+  exerciseCard: {
+    width: width * 0.25,
+    backgroundColor: colors.background,
+    borderRadius: borderRadius.md,
+    padding: spacing.sm,
+    marginRight: spacing.sm,
     borderWidth: 2,
     borderColor: colors.border,
+    alignItems: 'center',
+    position: 'relative',
+  },
+  exerciseCardActive: {
+    borderColor: colors.primary,
+    backgroundColor: `${colors.primary}10`,
+  },
+  exerciseCardCompleted: {
+    borderColor: colors.success,
+    backgroundColor: `${colors.success}10`,
+  },
+  exerciseCardNumber: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: colors.border,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: spacing.xs,
   },
-  exerciseListItemActive: {
-    borderColor: colors.primary,
-    backgroundColor: `${colors.primary}20`,
-  },
-  exerciseListItemCompleted: {
+  exerciseCardNumberCompleted: {
     backgroundColor: colors.success,
-    borderColor: colors.success,
   },
-  exerciseListItemText: {
+  exerciseCardNumberText: {
     fontSize: fontSize.sm,
     fontWeight: '600',
     color: colors.text.secondary,
   },
-  exerciseListItemTextCompleted: {
+  exerciseCardNumberTextCompleted: {
     color: colors.text.inverse,
   },
-  exerciseListItemName: {
-    display: 'none',
+  exerciseCardName: {
+    fontSize: fontSize.xs,
+    color: colors.text.secondary,
+    textAlign: 'center',
+    lineHeight: 16,
+  },
+  exerciseCardNameActive: {
+    color: colors.primary,
+    fontWeight: '600',
+  },
+  completedBadge: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: colors.success,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  completedBadgeText: {
+    fontSize: 10,
+    color: colors.text.inverse,
+    fontWeight: '700',
   },
 });
 
