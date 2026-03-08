@@ -28,6 +28,7 @@
     "@koa/cors": "^5.0.0",
     "@koa/router": "^15.3.1",
     "@prisma/client": "^5.22.0",
+    "@types/koa-static": "^4.0.4",
     "axios": "^1.13.6",
     "dotenv": "^16.6.1",
     "joi": "^17.13.3",
@@ -35,6 +36,7 @@
     "koa": "^3.1.2",
     "koa-bodyparser": "^4.4.1",
     "koa-logger": "^4.0.0",
+    "koa-static": "^5.0.0",
     "winston": "^3.19.0"
   },
   "devDependencies": {

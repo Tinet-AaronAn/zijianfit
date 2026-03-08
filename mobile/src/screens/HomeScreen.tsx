@@ -314,12 +314,12 @@ const styles = StyleSheet.create({
   },
   weekGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.xs,
   },
   dayCard: {
-    width: '13%',
-    aspectRatio: 1,
+    width: 42,
+    height: 56,
     backgroundColor: colors.card,
     borderRadius: borderRadius.md,
     justifyContent: 'center',

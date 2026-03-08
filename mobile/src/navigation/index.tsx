@@ -34,6 +34,7 @@ export type RootStackParamList = {
     title: string;
     targetRounds: number;
     duration: number;
+    workoutCategory?: 'upper-body' | 'lower-body' | 'cardio';
   };
 };
 

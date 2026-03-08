@@ -86,32 +86,58 @@ const WorkoutDetailScreen: React.FC<Props> = ({ route, navigation }) => {
   const handleFollowWorkout = () => {
     if (!plan) return;
 
-    // 判断训练类型
+    // 判断训练类型和分类
     const hasStrengthExercises = plan.exercises.some(e => e.type === 'strength');
     const hasCardioExercises = plan.exercises.some(e => e.type === 'cardio');
 
-    // 获取跟练视频（如果有）
-    const followVideo = plan.exercises.find(e => e.videoUrl && e.type === 'strength');
+    // 根据训练日判断训练分类
+    let workoutCategory: 'upper-body' | 'lower-body' | 'cardio' | undefined;
+    let videoUrl: string | undefined;
+    let targetRounds = 1;
+
+    // 周一：上肢力量 + 慢跑
+    if (plan.dayOfWeek === 1) {
+      workoutCategory = 'upper-body';
+      videoUrl = '/videos/upper-body.mp4';
+      targetRounds = 3;
+    }
+    // 周三：下肢力量 + 慢跑
+    else if (plan.dayOfWeek === 3) {
+      workoutCategory = 'lower-body';
+      videoUrl = '/videos/lower-body.mp4';
+      targetRounds = 3;
+    }
+    // 周五：间歇跑（纯有氧）
+    else if (plan.dayOfWeek === 5) {
+      workoutCategory = 'cardio';
+      videoUrl = undefined;
+      targetRounds = 1;
+    }
+    // 周日：全身循环训练
+    else if (plan.dayOfWeek === 7) {
+      workoutCategory = 'upper-body'; // 使用上肢视频
+      videoUrl = '/videos/upper-body.mp4';
+      targetRounds = 4;
+    }
 
     navigation.navigate('FollowWorkout', {
       id: plan.id,
       planId: plan.id,
       dayOfWeek: plan.dayOfWeek,
-      type: hasStrengthExercises ? 'strength' : 'cardio',
-      videoUrl: followVideo?.videoUrl,
+      type: workoutCategory === 'cardio' ? 'cardio' : 'strength',
+      videoUrl: videoUrl,
       title: plan.title,
-      targetRounds: hasStrengthExercises ? 3 : 1, // 力量训练3轮，有氧1轮
+      targetRounds: targetRounds,
       duration: plan.duration,
+      workoutCategory: workoutCategory,
     });
   };
 
   // 判断是否显示跟练模式
   const shouldShowFollowMode = () => {
     if (!plan) return false;
-    // 如果有视频或者是有氧训练，显示跟练模式
-    const hasVideo = plan.exercises.some(e => e.videoUrl);
-    const isCardio = plan.exercises.every(e => e.type === 'cardio');
-    return hasVideo || isCardio;
+    // 周一、周三、周五、周日都支持跟练模式
+    return [1, 3, 5, 7].includes(plan.dayOfWeek);
   };
 
   if (isLoading) {

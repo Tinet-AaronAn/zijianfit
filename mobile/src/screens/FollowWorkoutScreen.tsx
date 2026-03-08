@@ -24,6 +24,7 @@ interface WorkoutSession {
   title: string;
   targetRounds: number;
   duration: number;
+  workoutCategory?: 'upper-body' | 'lower-body' | 'cardio'; // 新增：训练分类
 }
 
 const { width, height } = Dimensions.get('window');
@@ -40,6 +41,11 @@ const FollowWorkoutScreen: React.FC<Props> = ({ route, navigation }) => {
   const isCardioTraining = session.type === 'cardio';
   const progress = (currentRound / session.targetRounds) * 100;
 
+  // 判断训练分类
+  const isUpperBody = session.workoutCategory === 'upper-body';
+  const isLowerBody = session.workoutCategory === 'lower-body';
+  const isCardio = session.workoutCategory === 'cardio';
+
   // 获取视频URL（模拟器用10.0.2.2，真机用实际IP）
   const getVideoUrl = (path: string | undefined): string | null => {
     if (!path) return null;
@@ -47,16 +53,25 @@ const FollowWorkoutScreen: React.FC<Props> = ({ route, navigation }) => {
       const host = '10.0.2.2'; // 模拟器专用
       return `http://${host}:3001${path}`;
     }
-    // B站链接直接返回
-    if (path.includes('bilibili.com')) {
-      return path;
-    }
+    // B站链接或其他URL直接返回
     return path;
   };
 
   // 判断是否是B站视频
   const isBilibiliVideo = (url: string | undefined): boolean => {
     return url?.includes('bilibili.com') || false;
+  };
+
+  // 根据训练分类获取视频URL
+  const getWorkoutVideoUrl = (): string | null => {
+    if (isUpperBody) {
+      return '/videos/upper-body.mp4';
+    }
+    if (isLowerBody) {
+      return '/videos/lower-body.mp4';
+    }
+    // 其他情况使用传入的 videoUrl
+    return session.videoUrl || null;
   };
 
   const handleCompleteRound = () => {
@@ -66,9 +81,10 @@ const FollowWorkoutScreen: React.FC<Props> = ({ route, navigation }) => {
     if (newRound >= session.targetRounds) {
       // 完成所有轮次
       setIsCompleted(true);
+      const trainingType = isUpperBody ? '上肢力量' : isLowerBody ? '下肢力量' : '训练';
       Alert.alert(
         '🎉 训练完成！',
-        `恭喜你完成了 ${session.targetRounds} 轮训练！`,
+        `恭喜你完成了 ${session.targetRounds} 轮${trainingType}训练！\n总时长约 ${Math.round(session.duration * session.targetRounds)} 分钟`,
         [
           {
             text: '返回首页',
@@ -78,9 +94,10 @@ const FollowWorkoutScreen: React.FC<Props> = ({ route, navigation }) => {
       );
     } else {
       // 还有下一轮
+      const trainingType = isUpperBody ? '上肢力量' : isLowerBody ? '下肢力量' : '训练';
       Alert.alert(
         '✅ 完成一轮',
-        `已完成 ${newRound}/${session.targetRounds} 轮`,
+        `已完成 ${newRound}/${session.targetRounds} 轮${trainingType}训练`,
         [
           {
             text: '继续训练',
@@ -132,61 +149,40 @@ const FollowWorkoutScreen: React.FC<Props> = ({ route, navigation }) => {
       </View>
 
       {/* 训练内容区域 */}
-      {isStrengthTraining && session.videoUrl ? (
-        // 力量训练：显示视频播放器
+      {(isUpperBody || isLowerBody) ? (
+        // 上肢/下肢力量训练：显示视频播放器
         <View style={styles.videoContainer}>
-          {isBilibiliVideo(session.videoUrl) ? (
-            // B站视频：使用 WebView
-            <>
-              <WebView
-                source={{ uri: getVideoUrl(session.videoUrl)! }}
-                style={styles.video}
-                allowsFullscreenVideo={true}
-                mediaPlaybackRequiresUserAction={false}
-                javaScriptEnabled={true}
-                domStorageEnabled={true}
-                startInLoadingState={true}
-                scalesPageToFit={true}
-              />
-              <View style={styles.webviewHint}>
-                <Text style={styles.webviewHintText}>💡 全屏播放效果更佳</Text>
-              </View>
-            </>
-          ) : (
-            // 本地视频：使用 Video 组件
-            <>
-              <Video
-                ref={videoRef}
-                source={{ uri: getVideoUrl(session.videoUrl)! }}
-                style={styles.video}
-                controls={true}
-                paused={!isPlaying}
-                resizeMode="contain"
-                repeat={true}
-                onEnd={handleVideoEnd}
-                onError={(e) => {
-                  console.log('视频播放错误:', e);
-                  Alert.alert('提示', '视频加载失败，请检查网络连接');
-                }}
-                onLoad={() => {
-                  console.log('视频加载成功');
-                }}
-              />
-              {/* 播放提示 */}
-              {!isPlaying && (
-                <TouchableOpacity
-                  style={styles.playOverlay}
-                  onPress={() => setIsPlaying(true)}
-                >
-                  <Text style={styles.playIcon}>▶️</Text>
-                  <Text style={styles.playText}>点击播放视频</Text>
-                </TouchableOpacity>
-              )}
-            </>
+          <Video
+            ref={videoRef}
+            source={{ uri: getVideoUrl(getWorkoutVideoUrl())! }}
+            style={styles.video}
+            controls={true}
+            paused={!isPlaying}
+            resizeMode="contain"
+            repeat={true}
+            onEnd={handleVideoEnd}
+            onError={(e) => {
+              console.log('视频播放错误:', e);
+              Alert.alert('提示', '视频加载失败，请检查视频文件是否存在');
+            }}
+            onLoad={() => {
+              console.log('视频加载成功');
+              setIsPlaying(true); // 自动播放
+            }}
+          />
+          {/* 播放提示 */}
+          {!isPlaying && (
+            <TouchableOpacity
+              style={styles.playOverlay}
+              onPress={() => setIsPlaying(true)}
+            >
+              <Text style={styles.playIcon}>▶️</Text>
+              <Text style={styles.playText}>点击播放视频</Text>
+            </TouchableOpacity>
           )}
         </View>
-      ) : isCardioTraining ? (
-        // 有氧训练：显示跑步提示
+      ) : isCardio ? (
+        // 有氧训练（跑步）：显示跑步提示
         <View style={styles.cardioContainer}>
           <Text style={styles.cardioEmoji}>🏃</Text>
           <Text style={styles.cardioTitle}>开始跑步</Text>
@@ -206,11 +202,11 @@ const FollowWorkoutScreen: React.FC<Props> = ({ route, navigation }) => {
 
       {/* 底部操作区 */}
       <View style={styles.actionContainer}>
-        {/* 力量训练显示轮次提示 */}
-        {isStrengthTraining && (
+        {/* 上肢/下肢力量训练显示轮次提示 */}
+        {(isUpperBody || isLowerBody) && (
           <View style={styles.roundInfo}>
             <Text style={styles.roundInfoText}>
-              💪 跟着视频完成动作，做完一轮后点击下方按钮
+              💪 跟着视频完成 {isUpperBody ? '上肢' : '下肢'}训练，视频播完一轮后点击下方按钮
             </Text>
           </View>
         )}
@@ -221,7 +217,7 @@ const FollowWorkoutScreen: React.FC<Props> = ({ route, navigation }) => {
           onPress={handleCompleteRound}
         >
           <Text style={styles.completeButtonText}>
-            {isStrengthTraining ? '✓ 完成这一轮' : '✓ 完成跑步'}
+            {isCardio ? '✓ 完成跑步' : '✓ 完成这一轮'}
           </Text>
         </TouchableOpacity>
 

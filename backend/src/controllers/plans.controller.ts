@@ -62,15 +62,32 @@ export async function getCurrentPlan(ctx: Context) {
         const dayDate = new Date(now);
         dayDate.setDate(dayDate.getDate() - dayDate.getDay() + dayPlan.dayOfWeek);
 
+        // 计算实际训练时间
+        let calculatedDuration = 0;
+        if (!dayPlan.isRestDay && dayPlan.exercises.length > 0) {
+          let totalSeconds = 0;
+          for (const exercise of dayPlan.exercises) {
+            if (exercise.duration && exercise.duration > 0) {
+              totalSeconds += exercise.duration;
+            } else if (exercise.sets && exercise.reps) {
+              const secondsPerSet = exercise.reps * 3;
+              const exerciseTime = exercise.sets * secondsPerSet + (exercise.sets - 1) * (exercise.restSeconds || 45);
+              totalSeconds += exerciseTime;
+            }
+          }
+          calculatedDuration = Math.ceil(totalSeconds / 60);
+        }
+
         return {
-          id: dayPlan.id,  // 添加 DayPlan 的 ID
-          planId: dayPlan.planId,  // 添加所属计划的 ID
+          id: dayPlan.id,
+          planId: dayPlan.planId,
           dayOfWeek: dayPlan.dayOfWeek,
           date: dayDate.toISOString().split('T')[0],
           isRestDay: dayPlan.isRestDay,
           title: dayPlan.title,
           label: dayPlan.isRestDay ? '休息' : `${dayPlan.exercises.length} 个动作`,
           exerciseCount: dayPlan.exercises.length,
+          duration: calculatedDuration || dayPlan.totalDuration,
         };
       });
 
@@ -88,15 +105,32 @@ export async function getCurrentPlan(ctx: Context) {
       const dayDate = new Date(now);
       dayDate.setDate(dayDate.getDate() - dayDate.getDay() + dayPlan.dayOfWeek);
 
+      // 计算实际训练时间
+      let calculatedDuration = 0;
+      if (!dayPlan.isRestDay && dayPlan.exercises.length > 0) {
+        let totalSeconds = 0;
+        for (const exercise of dayPlan.exercises) {
+          if (exercise.duration && exercise.duration > 0) {
+            totalSeconds += exercise.duration;
+          } else if (exercise.sets && exercise.reps) {
+            const secondsPerSet = exercise.reps * 3;
+            const exerciseTime = exercise.sets * secondsPerSet + (exercise.sets - 1) * (exercise.restSeconds || 45);
+            totalSeconds += exerciseTime;
+          }
+        }
+        calculatedDuration = Math.ceil(totalSeconds / 60);
+      }
+
       return {
-        id: dayPlan.id,  // 添加 DayPlan 的 ID
-        planId: dayPlan.planId,  // 添加所属计划的 ID
+        id: dayPlan.id,
+        planId: dayPlan.planId,
         dayOfWeek: dayPlan.dayOfWeek,
         date: dayDate.toISOString().split('T')[0],
         isRestDay: dayPlan.isRestDay,
         title: dayPlan.title,
         label: dayPlan.isRestDay ? '休息' : `${dayPlan.exercises.length} 个动作`,
         exerciseCount: dayPlan.exercises.length,
+        duration: calculatedDuration || dayPlan.totalDuration,
       };
     });
 
@@ -167,13 +201,39 @@ export async function getDayPlan(ctx: Context) {
       pattern: exercise.pattern,
     }));
 
+    // 计算实际训练时间（分钟）
+    let calculatedDuration = 0;
+    if (!dayPlan.isRestDay && dayPlan.exercises.length > 0) {
+      let totalSeconds = 0;
+      
+      for (const exercise of dayPlan.exercises) {
+        if (exercise.duration && exercise.duration > 0) {
+          // 有氧训练：直接使用时长（秒）
+          totalSeconds += exercise.duration;
+        } else if (exercise.sets && exercise.reps) {
+          // 力量训练：估算每组时间
+          // 假设每次动作 3 秒，每组动作数 × 3 秒
+          const secondsPerSet = exercise.reps * 3;
+          // 总时间 = 组数 × 每组时间 + (组数 - 1) × 组间休息
+          const exerciseTime = exercise.sets * secondsPerSet + (exercise.sets - 1) * (exercise.restSeconds || 45);
+          totalSeconds += exerciseTime;
+        }
+      }
+      
+      // 转换为分钟，向上取整
+      calculatedDuration = Math.ceil(totalSeconds / 60);
+    }
+
     ResponseUtil.success(ctx, {
+      id: dayPlan.id,
+      planId: dayPlan.planId,
       dayOfWeek: dayPlan.dayOfWeek,
       dayName: dayPlan.dayName,
       date: dayDate.toISOString().split('T')[0],
       isRestDay: dayPlan.isRestDay,
       title: dayPlan.title,
-      totalDuration: dayPlan.totalDuration,
+      description: dayPlan.description,
+      duration: calculatedDuration || dayPlan.totalDuration,
       exercises: dayPlan.isRestDay ? [] : exercises,
     });
   } catch (error: any) {
