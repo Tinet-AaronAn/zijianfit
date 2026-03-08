@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xs,
   },
   dayCard: {
-    width: 42,
+    flex: 1,
     height: 56,
     backgroundColor: colors.card,
     borderRadius: borderRadius.md,
@@ -326,6 +326,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.border,
+    marginHorizontal: 2,
   },
   dayCardToday: {
     backgroundColor: colors.primary,
