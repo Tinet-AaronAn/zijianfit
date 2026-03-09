@@ -225,7 +225,7 @@ npm run android
 - [集成测试计划](./testing/INTEGRATION_TEST_PLAN.md)
 
 ### 部署文档
-- [Docker 部署指南](../backend/DOCKER_DEPLOYMENT.md)
+- [Docker Compose 部署](../backend/README.md#部署) - 见 backend/README.md
 
 ---
 

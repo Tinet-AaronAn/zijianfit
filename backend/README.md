@@ -170,24 +170,81 @@ backend/
 
 ## 部署
 
-### 传统部署
+### Docker Compose 部署
 
-1. 安装 Node.js 18+
-2. 克隆代码并安装依赖
-3. 配置环境变量
-4. 运行数据库迁移
-5. 使用 PM2 启动
+#### 1. 创建 docker-compose.yml
 
-```bash
-pm2 start dist/server.js --name zijianfit-api
+```yaml
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: zijianfit-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=file:/app/data/prod.db
+      - JWT_SECRET=your-super-secret-key-change-this-in-production
+      - CORS_ORIGIN=*
+    volumes:
+      - ./data:/app/data
+      - ./public:/app/public:ro
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
 ```
 
-### Docker 部署（待实现）
+#### 2. 启动服务
 
 ```bash
-docker build -t zijianfit-backend .
-docker run -p 3001:3001 zijianfit-backend
+# 构建并启动
+docker-compose up -d
+
+# 查看日志
+docker-compose logs -f backend
+
+# 初始化数据库（首次部署）
+docker-compose exec backend sh
+npx prisma migrate deploy
+npx prisma db seed
+exit
+
+# 检查状态
+docker-compose ps
 ```
+
+#### 3. 验证部署
+
+```bash
+# 健康检查
+curl http://localhost:3001/health
+
+# API 信息
+curl http://localhost:3001/
+```
+
+#### 4. 更新部署
+
+```bash
+# 拉取最新代码
+git pull
+
+# 重新构建并启动
+docker-compose up -d --build
+```
+
+**注意**：
+- 修改 `JWT_SECRET` 为强密钥（至少 32 字符）
+- 数据库文件存储在 `./data` 目录
+- 视频资源在 `./public` 目录
 
 ## 环境要求
 
