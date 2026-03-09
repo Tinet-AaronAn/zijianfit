@@ -170,58 +170,61 @@ backend/
 
 ## 部署
 
-### Docker Compose 部署
+### 使用 Docker Compose
 
-#### 1. 创建 docker-compose.yml
+#### 1. 配置环境变量
 
-```yaml
-version: '3.8'
+复制环境变量示例文件：
 
-services:
-  backend:
-    build: 
-      context: .
-      dockerfile: Dockerfile
-    container_name: zijianfit-backend
-    restart: unless-stopped
-    ports:
-      - "3001:3001"
-    environment:
-      - NODE_ENV=production
-      - DATABASE_URL=file:/app/data/prod.db
-      - JWT_SECRET=your-super-secret-key-change-this-in-production
-      - CORS_ORIGIN=*
-    volumes:
-      - ./data:/app/data
-      - ./public:/app/public:ro
-    healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-      start_period: 5s
+```bash
+cp .env.docker.example .env
+```
+
+**重要配置项**：
+
+| 变量 | 说明 | 默认值 |
+|------|------|--------|
+| `PORT` | 服务端口 | 3001 |
+| `JWT_SECRET` | JWT 密钥（必填） | - |
+| `DATABASE_URL` | 数据库连接 | file:/app/data/prod.db |
+| `CORS_ORIGIN` | CORS 允许源 | * |
+| `DATA_PATH` | 数据存储路径 | ./data |
+
+**生成 JWT_SECRET**：
+```bash
+openssl rand -base64 32
 ```
 
 #### 2. 启动服务
 
 ```bash
-# 构建并启动
+# 构建并启动（后台运行）
 docker-compose up -d
 
 # 查看日志
 docker-compose logs -f backend
 
-# 初始化数据库（首次部署）
-docker-compose exec backend sh
-npx prisma migrate deploy
-npx prisma db seed
-exit
-
-# 检查状态
+# 查看容器状态
 docker-compose ps
 ```
 
-#### 3. 验证部署
+#### 3. 初始化数据库（首次部署）
+
+```bash
+# 进入容器
+docker-compose exec backend sh
+
+# 运行迁移
+npx prisma migrate deploy
+
+# 导入种子数据
+npx prisma db seed
+
+# 退出容器
+exit
+```
+
+#### 4. 验证部署
 
 ```bash
 # 健康检查
@@ -231,20 +234,24 @@ curl http://localhost:3001/health
 curl http://localhost:3001/
 ```
 
-#### 4. 更新部署
+#### 5. 日常维护
 
 ```bash
-# 拉取最新代码
-git pull
+# 查看日志
+docker-compose logs -f
 
-# 重新构建并启动
+# 重启服务
+docker-compose restart
+
+# 停止服务
+docker-compose down
+
+# 更新部署
+git pull
 docker-compose up -d --build
 ```
 
-**注意**：
-- 修改 `JWT_SECRET` 为强密钥（至少 32 字符）
-- 数据库文件存储在 `./data` 目录
-- 视频资源在 `./public` 目录
+**详细配置**: 见 [docker-compose.yml](./docker-compose.yml) 和 [.env.docker.example](./.env.docker.example)
 
 ## 环境要求
 
