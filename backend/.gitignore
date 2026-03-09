@@ -44,5 +44,4 @@ temp/
 coverage/
 
 # Prisma
-prisma/migrations/*_*
-!prisma/migrations/migration_lock.toml
+# Migrations should be committed to version control
