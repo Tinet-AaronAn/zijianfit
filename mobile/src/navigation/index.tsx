@@ -10,7 +10,7 @@ import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import HomeScreen from '../screens/HomeScreen';
 import WorkoutDetailScreen from '../screens/WorkoutDetailScreen';
-import WorkoutSessionScreen from '../screens/WorkoutSessionScreen';
+import FollowWorkoutScreen from '../screens/FollowWorkoutScreen';
 import StatsScreen from '../screens/StatsScreen';
 
 // Store
@@ -19,10 +19,22 @@ import { useAuthStore } from '../stores/useAuthStore';
 export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;
+  MainTabs: undefined;
   Login: undefined;
   Register: undefined;
-  WorkoutDetail: { planId: string };
+  WorkoutDetail: { planId: string; dayOfWeek: number };
   WorkoutSession: { planId: string; exercises: any[] };
+  FollowWorkout: {
+    id: string;
+    planId: string;
+    dayOfWeek: number;
+    type: 'strength' | 'cardio';
+    videoUrl?: string;
+    title: string;
+    targetRounds: number;
+    duration: number;
+    workoutCategory?: 'upper-body' | 'lower-body' | 'cardio';
+  };
 };
 
 export type MainTabParamList = {
@@ -109,8 +121,8 @@ const MainStack = () => {
       }}
     >
       <Stack.Screen name="MainTabs" component={MainTabs} />
-      <Stack.Screen 
-        name="WorkoutDetail" 
+      <Stack.Screen
+        name="WorkoutDetail"
         component={WorkoutDetailScreen}
         options={{
           headerShown: true,
@@ -121,9 +133,17 @@ const MainStack = () => {
           },
         }}
       />
-      <Stack.Screen 
-        name="WorkoutSession" 
+      <Stack.Screen
+        name="WorkoutSession"
         component={WorkoutSessionScreen}
+        options={{
+          headerShown: false,
+          gestureEnabled: false,
+        }}
+      />
+      <Stack.Screen
+        name="FollowWorkout"
+        component={FollowWorkoutScreen}
         options={{
           headerShown: false,
           gestureEnabled: false,

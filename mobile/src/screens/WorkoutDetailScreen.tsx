@@ -7,11 +7,26 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Linking,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Video from 'react-native-video';
 import { colors, fontSize, spacing, borderRadius } from '../constants';
 import api from '../services/api';
+
+// 获取完整的视频URL
+const getVideoUrl = (path: string | undefined): string | null => {
+  if (!path) return null;
+  // 本地视频路径以 /videos/ 开头
+  if (path.startsWith('/videos/')) {
+    // 模拟器访问主机需要使用 10.0.2.2
+    // 真机需要使用实际 IP
+    const host = '10.0.2.2'; // 模拟器专用
+    return `http://${host}:3001${path}`;
+  }
+  // 其他情况返回原路径（如B站链接）
+  return path;
+};
 
 type Props = NativeStackScreenProps<any, 'WorkoutDetail'>;
 
@@ -35,19 +50,19 @@ interface WorkoutPlan {
 }
 
 const WorkoutDetailScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { planId } = route.params as { planId: string };
+  const { planId, dayOfWeek } = route.params as { planId: string; dayOfWeek: number };
   const [plan, setPlan] = useState<WorkoutPlan | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
 
   useEffect(() => {
     loadPlan();
-  }, [planId]);
+  }, [planId, dayOfWeek]);
 
   const loadPlan = async () => {
     try {
       setIsLoading(true);
-      const response = await api.get(`/plans/${planId}`);
+      const response = await api.get(`/plans/${planId}/days/${dayOfWeek}`);
       if (response.success) {
         setPlan(response.data);
       }
@@ -61,11 +76,68 @@ const WorkoutDetailScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const handleStartWorkout = () => {
     if (!plan) return;
-    
-    navigation.navigate('WorkoutSession', { 
+
+    navigation.navigate('WorkoutSession', {
       planId: plan.id,
-      exercises: plan.exercises 
+      exercises: plan.exercises
     });
+  };
+
+  const handleFollowWorkout = () => {
+    if (!plan) return;
+
+    // 判断训练类型和分类
+    const hasStrengthExercises = plan.exercises.some(e => e.type === 'strength');
+    const hasCardioExercises = plan.exercises.some(e => e.type === 'cardio');
+
+    // 根据训练日判断训练分类
+    let workoutCategory: 'upper-body' | 'lower-body' | 'cardio' | undefined;
+    let videoUrl: string | undefined;
+    let targetRounds = 1;
+
+    // 周一：上肢力量 + 慢跑
+    if (plan.dayOfWeek === 1) {
+      workoutCategory = 'upper-body';
+      videoUrl = '/videos/upper-body.mp4';
+      targetRounds = 3;
+    }
+    // 周三：下肢力量 + 慢跑
+    else if (plan.dayOfWeek === 3) {
+      workoutCategory = 'lower-body';
+      videoUrl = '/videos/lower-body.mp4';
+      targetRounds = 3;
+    }
+    // 周五：间歇跑（纯有氧）
+    else if (plan.dayOfWeek === 5) {
+      workoutCategory = 'cardio';
+      videoUrl = undefined;
+      targetRounds = 1;
+    }
+    // 周日：全身循环训练
+    else if (plan.dayOfWeek === 7) {
+      workoutCategory = 'upper-body'; // 使用上肢视频
+      videoUrl = '/videos/upper-body.mp4';
+      targetRounds = 4;
+    }
+
+    navigation.navigate('FollowWorkout', {
+      id: plan.id,
+      planId: plan.id,
+      dayOfWeek: plan.dayOfWeek,
+      type: workoutCategory === 'cardio' ? 'cardio' : 'strength',
+      videoUrl: videoUrl,
+      title: plan.title,
+      targetRounds: targetRounds,
+      duration: plan.duration,
+      workoutCategory: workoutCategory,
+    });
+  };
+
+  // 判断是否显示跟练模式
+  const shouldShowFollowMode = () => {
+    if (!plan) return false;
+    // 周一、周三、周五、周日都支持跟练模式
+    return [1, 3, 5, 7].includes(plan.dayOfWeek);
   };
 
   if (isLoading) {
@@ -146,23 +218,50 @@ const WorkoutDetailScreen: React.FC<Props> = ({ route, navigation }) => {
             <Text style={styles.sectionTitle}>视频演示</Text>
             <View style={styles.videoContainer}>
               <Video
-                source={{ uri: selectedExercise.videoUrl }}
+                source={{ uri: getVideoUrl(selectedExercise.videoUrl)! }}
                 style={styles.video}
                 controls={true}
-                paused={true}
+                paused={false}
                 resizeMode="contain"
+                repeat={true}
+                playInBackground={false}
+                onLoad={(data) => {
+                  console.log('视频加载成功:', data);
+                }}
+                onError={(e) => {
+                  console.log('视频播放错误:', e);
+                  Alert.alert('视频加载失败', `错误: ${JSON.stringify(e)}`);
+                }}
+                onBuffer={(e) => {
+                  console.log('视频缓冲中:', e);
+                }}
               />
             </View>
             <Text style={styles.videoTitle}>{selectedExercise.name}</Text>
+            <Text style={styles.videoDebug}>视频URL: {getVideoUrl(selectedExercise.videoUrl)}</Text>
           </View>
         )}
       </ScrollView>
 
       {/* 底部按钮 */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.startButton} onPress={handleStartWorkout}>
-          <Text style={styles.startButtonText}>开始训练</Text>
-        </TouchableOpacity>
+        {shouldShowFollowMode() ? (
+          <>
+            {/* 跟练模式按钮（优先） */}
+            <TouchableOpacity style={styles.followButton} onPress={handleFollowWorkout}>
+              <Text style={styles.followButtonText}>🎬 跟练模式</Text>
+            </TouchableOpacity>
+            {/* 经典模式按钮 */}
+            <TouchableOpacity style={styles.classicButton} onPress={handleStartWorkout}>
+              <Text style={styles.classicButtonText}>经典模式</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          /* 只有经典模式 */
+          <TouchableOpacity style={styles.startButton} onPress={handleStartWorkout}>
+            <Text style={styles.startButtonText}>开始训练</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -291,14 +390,13 @@ const styles = StyleSheet.create({
     marginLeft: spacing.sm,
   },
   videoContainer: {
-    backgroundColor: colors.card,
+    backgroundColor: '#000',
     borderRadius: borderRadius.lg,
     overflow: 'hidden',
     aspectRatio: 16 / 9,
   },
   video: {
-    width: '100%',
-    height: '100%',
+    flex: 1,
   },
   videoTitle: {
     fontSize: fontSize.base,
@@ -312,6 +410,31 @@ const styles = StyleSheet.create({
     backgroundColor: colors.card,
     borderTopWidth: 1,
     borderTopColor: colors.border,
+  },
+  followButton: {
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  followButtonText: {
+    fontSize: fontSize.lg,
+    fontWeight: '600',
+    color: colors.text.inverse,
+  },
+  classicButton: {
+    backgroundColor: colors.card,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.primary,
+  },
+  classicButtonText: {
+    fontSize: fontSize.lg,
+    fontWeight: '600',
+    color: colors.primary,
   },
   startButton: {
     backgroundColor: colors.primary,

@@ -17,11 +17,18 @@ type Props = NativeStackScreenProps<any, 'Home'>;
 
 interface WorkoutPlan {
   id: string;
+  planId: string;
   dayOfWeek: number;
+  dayName?: string;
+  date?: string;
+  isRestDay?: boolean;
   title: string;
-  description: string;
-  duration: number;
-  exercises: any[];
+  description?: string;
+  label?: string;
+  duration?: number;
+  totalDuration?: number;
+  exerciseCount?: number;
+  exercises?: any[];
 }
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
@@ -41,9 +48,9 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const loadPlans = async () => {
     try {
       setIsLoading(true);
-      const response = await api.get('/plans/my');
-      if (response.success) {
-        const plans = response.data;
+      const response = await api.get('/plans/current');
+      if (response.success && response.data && response.data.days) {
+        const plans = response.data.days;
         setWeeklyPlans(plans);
         
         // 找到今天的计划
@@ -99,15 +106,18 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         {todayPlan ? (
           <TouchableOpacity
             style={styles.todayCard}
-            onPress={() => navigation.navigate('WorkoutDetail', { planId: todayPlan.id })}
+            onPress={() => navigation.navigate('WorkoutDetail', { 
+              planId: todayPlan.planId,
+              dayOfWeek: todayPlan.dayOfWeek 
+            })}
           >
             <View style={styles.todayCardContent}>
               <Text style={styles.todayTitle}>{todayPlan.title}</Text>
               <Text style={styles.todayDescription}>{todayPlan.description}</Text>
               <View style={styles.todayMeta}>
-                <Text style={styles.todayMetaText}>⏱️ {todayPlan.duration}分钟</Text>
+                <Text style={styles.todayMetaText}>⏱️ {todayPlan.totalDuration || todayPlan.duration || 0}分钟</Text>
                 <Text style={styles.todayMetaText}>
-                  💪 {todayPlan.exercises?.length || 0}个动作
+                  💪 {todayPlan.exerciseCount || todayPlan.exercises?.length || 0}个动作
                 </Text>
               </View>
             </View>
@@ -135,7 +145,10 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
                 styles.dayCard,
                 plan.dayOfWeek === today && styles.dayCardToday,
               ]}
-              onPress={() => navigation.navigate('WorkoutDetail', { planId: plan.id })}
+              onPress={() => navigation.navigate('WorkoutDetail', { 
+                planId: plan.planId,
+                dayOfWeek: plan.dayOfWeek 
+              })}
             >
               <Text
                 style={[
@@ -157,7 +170,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
                     plan.dayOfWeek === today && styles.dayIndicatorTextToday,
                   ]}
                 >
-                  {plan.exercises?.length || 0}
+                  {plan.exerciseCount || plan.exercises?.length || 0}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -301,18 +314,19 @@ const styles = StyleSheet.create({
   },
   weekGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.xs,
   },
   dayCard: {
-    width: '13%',
-    aspectRatio: 1,
+    flex: 1,
+    height: 56,
     backgroundColor: colors.card,
     borderRadius: borderRadius.md,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.border,
+    marginHorizontal: 2,
   },
   dayCardToday: {
     backgroundColor: colors.primary,

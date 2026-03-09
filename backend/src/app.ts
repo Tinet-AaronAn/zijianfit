@@ -3,6 +3,8 @@ import logger from 'koa-logger';
 import Router from '@koa/router';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
+import serve from 'koa-static';
+import path from 'path';
 import { errorHandler } from './middleware/error';
 import { securityHeaders } from './middleware/security';
 import { rateLimit } from './middleware/rateLimit';
@@ -24,6 +26,9 @@ app.use(cors({
   allowHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
+
+// 静态文件服务 - 视频文件
+app.use(serve(path.join(__dirname, '../public')));
 
 app.use(bodyParser());
 app.use(errorHandler); // 错误处理
