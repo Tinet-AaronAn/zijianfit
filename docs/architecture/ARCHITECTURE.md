@@ -1,9 +1,11 @@
 # 自健身 App - 架构设计文档
 
-**版本**: v1.0  
+**版本**: v1.1  
 **架构师**: 梁构  
-**日期**: 2026-02-28  
+**日期**: 2026-03-09  
 **开发周期**: 3 天 MVP
+
+> **⚠️ 重要更新 (2026-03-03)**: 登录方式已从微信登录改为用户名密码登录，详见 [CHANGE_LOG.md](../prd/CHANGE_LOG.md)
 
 ---
 
@@ -17,7 +19,6 @@
 | **导航** | React Navigation | 6.x | 官方推荐，社区活跃 |
 | **状态管理** | Zustand | 4.x | 简单轻量，避免 Redux 复杂性 |
 | **网络请求** | Axios | 1.x | 成熟稳定，拦截器支持 |
-| **微信 SDK** | react-native-wechat-lib | 2.x | 维护良好，支持登录/分享 |
 | **视频播放** | react-native-video | 6.x | 标准选择，功能完善 |
 | **推送通知** | @notifee/react-native | 7.x | 比 push-notification 更现代 |
 | **本地存储** | AsyncStorage | 1.x | React Native 标准方案 |
@@ -37,7 +38,7 @@
 | **数据库** | **SQLite** | 3.x | 零配置，单文件，MVP 足够 |
 | **ORM** | **Prisma** | 5.x | 类型安全，快速开发 |
 | **认证** | JWT | - | 无状态，适合移动端 |
-| **微信 SDK** | co-wechat-api | 2.x | Koa 生态，Promise 支持 |
+| **密码加密** | bcrypt | - | 安全的密码哈希 |
 | **参数校验** | Joi | 17.x | 成熟验证库 |
 | **日志** | Winston | 3.x | 企业级日志 |
 | **环境变量** | dotenv | 16.x | 配置管理 |
@@ -66,103 +67,7 @@
 
 **技术风险**：
 - ⚠️ SQLite 不支持高并发，单用户场景没问题
-- ⚠️ 微信 API 调用有频率限制，需要缓存 access_token
-
----
-
-### 1.3 微信登录集成方案
-
-#### 技术选型
-- **前端**: `react-native-wechat-lib`
-- **后端**: `co-wechat-api`
-
-#### 完整流程
-
-```
-┌──────────┐                  ┌──────────┐                  ┌──────────┐
-│ React    │                  │  Node.js │                  │  微信    │
-│ Native   │                  │  Server  │                  │  服务器  │
-└────┬─────┘                  └────┬─────┘                  └────┬─────┘
-     │                             │                             │
-     │ 1. 调用微信授权              │                             │
-     ├────────────────────────────>│                             │
-     │ (WX.sendAuthRequest)        │                             │
-     │                             │                             │
-     │ 2. 返回 code                 │                             │
-     │<────────────────────────────┤                             │
-     │                             │                             │
-     │ 3. 发送 code 到后端          │                             │
-     ├────────────────────────────>│                             │
-     │ POST /auth/wechat           │                             │
-     │ { code: "xxx" }             │                             │
-     │                             │ 4. code 换取 openid          │
-     │                             ├────────────────────────────>│
-     │                             │ GET /sns/oauth2/access_token│
-     │                             │ ?appid=xxx&secret=xxx&code=xxx
-     │                             │                             │
-     │                             │ 5. 返回 openid + session_key│
-     │                             │<────────────────────────────┤
-     │                             │                             │
-     │                             │ 6. 查询/创建用户            │
-     │                             │ (Prisma ORM)                │
-     │                             │                             │
-     │                             │ 7. 生成 JWT token           │
-     │                             │                             │
-     │ 8. 返回 token + 用户信息     │                             │
-     │<────────────────────────────┤                             │
-     │ { token: "jwt", user: {} }  │                             │
-     │                             │                             │
-     │ 9. 存储 token 到本地         │                             │
-     ├─────────────────────────────>                             │
-     │ (AsyncStorage)              │                             │
-     │                             │                             │
-```
-
-#### 手机号授权流程
-
-```
-用户点击"获取手机号"
-  ↓
-调用微信 getPhoneNumber API
-  ↓
-返回加密数据（encryptedData + iv）
-  ↓
-发送到后端 POST /auth/phone
-  ↓
-后端使用 session_key 解密
-  ↓
-保存手机号到数据库
-  ↓
-返回成功
-```
-
-**技术风险**：
-- ⚠️ 微信开放平台审核需要 1-3 天，需提前申请
-- ⚠️ session_key 有时效性，需要缓存管理
-- ⚠️ 测试环境需要配置应用签名
-
----
-
-### 1.4 视频资源方案
-
-#### 方案一：CDN + MP4（推荐）
-- 视频上传到 CDN（阿里云 OSS / 腾讯云 COS）
-- 前端直接播放 MP4 URL
-- 优点：稳定可靠，支持缓存
-- 缺点：需要存储费用
-
-#### 方案二：嵌入第三方视频
-- 使用 Bilibili / YouTube 嵌入
-- 优点：免费，无需存储
-- 缺点：依赖第三方，可能有广告
-
-#### MVP 建议
-**Day 1-2**: 使用免费视频 URL（网上搜索哑铃训练视频）
-**Day 3+**: 上传到 CDN，替换正式链接
-
-**技术风险**：
-- ⚠️ 第三方视频链接可能失效
-- ⚠️ 视频文件较大，需要考虑流量成本
+- ✅ 已移除微信登录依赖，降低集成复杂度
 
 ---
 
@@ -176,10 +81,10 @@
 │  ┌──────────────────────────────────────────────────────┐  │
 │  │           React Native App (Android)                 │  │
 │  │  ┌──────────────┐  ┌──────────────┐  ┌────────────┐ │  │
-│  │  │  微信登录     │  │  训练计划    │  │  视频播放  │ │  │
+│  │  │  登录/注册   │  │  训练计划    │  │  视频播放  │ │  │
 │  │  └──────────────┘  └──────────────┘  └────────────┘ │  │
 │  │  ┌──────────────┐  ┌──────────────┐  ┌────────────┐ │  │
-│  │  │  开始训练     │  │  打卡记录    │  │  周统计    │ │  │
+│  │  │  跟练模式     │  │  训练详情    │  │  周统计    │ │  │
 │  │  └──────────────┘  └──────────────┘  └────────────┘ │  │
 │  └──────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
@@ -190,23 +95,19 @@
 │                        服务端层                              │
 │  ┌──────────────────────────────────────────────────────┐  │
 │  │              Koa + Prisma + SQLite                    │  │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌────────────┐ │  │
-│  │  │  认证服务     │  │  计划服务    │  │  统计服务  │ │  │
-│  │  │  /auth/*     │  │  /plans/*    │  │  /stats/*  │ │  │
-│  │  └──────────────┘  └──────────────┘  └────────────┘ │  │
 │  │  ┌──────────────┐  ┌──────────────┐                 │  │
-│  │  │  打卡服务     │  │  推送服务    │                 │  │
-│  │  │  /progress/* │  │  (本地推送)  │                 │  │
+│  │  │  认证服务     │  │  计划服务    │                 │  │
+│  │  │  /auth/*     │  │  /plans/*    │                 │  │
 │  │  └──────────────┘  └──────────────┘                 │  │
 │  └──────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
                               │
               ┌───────────────┼───────────────┐
-              ▼               ▼               ▼
-        ┌──────────┐    ┌──────────┐   ┌──────────┐
-        │  SQLite  │    │  微信API │   │   CDN    │
-        │  数据库   │    │  开放平台 │   │  视频    │
-        └──────────┘    └──────────┘   └──────────┘
+              ▼              
+        ┌──────────┐    
+        │  SQLite  │    
+        │  数据库   │    
+        └──────────┘    
 ```
 
 ### 2.2 数据流图
@@ -214,11 +115,9 @@
 #### 用户登录流程
 
 ```
-用户 → 点击"微信登录" → 调用微信 SDK → 获取 code
+用户 → 输入用户名密码 → 
   ↓
-发送 code 到后端 → 后端调用微信 API → 获取 openid
-  ↓
-查询/创建用户 → 生成 JWT → 返回 token
+POST /api/auth/login → 验证用户 → 生成 JWT → 返回 token
   ↓
 客户端存储 token → 后续请求携带 token
 ```
@@ -226,17 +125,15 @@
 #### 训练流程
 
 ```
-用户 → 查看"本周计划" → GET /plans/current → 显示 7 天计划
+用户 → 查看"本周计划" → GET /api/plans/current → 显示 7 天计划
   ↓
-点击某一天 → GET /plans/:id/days/:day → 显示动作列表
+点击某一天 → GET /api/plans/:planId/days/:dayOfWeek → 显示动作列表
   ↓
-点击"开始训练" → 进入训练模式
+点击"跟练模式" → 进入训练页面
   ↓
-显示动作1 + 播放视频 → 完成1组 → POST /progress/set-complete
+播放视频 + 轮次计数
   ↓
-显示下一组/下一个动作 → 循环...
-  ↓
-全部完成 → POST /progress/checkin → 显示训练总结
+全部完成 → 显示庆祝页面
 ```
 
 ---
@@ -319,7 +216,6 @@
 | 字段 | 类型 | 说明 | 约束 |
 |------|------|------|------|
 | id | String | 用户 ID（UUID） | PRIMARY KEY |
-| openid | String | 微信 openid | UNIQUE, NOT NULL |
 | phone | String | 手机号 | UNIQUE |
 | nickname | String | 昵称 | - |
 | avatar | String | 头像 URL | - |
@@ -476,27 +372,30 @@ model Progress {
 
 ### 4.1 API 概览
 
-| 模块 | 端点 | 方法 | 说明 |
-|------|------|------|------|
-| **认证** | /auth/wechat | POST | 微信登录 |
-| | /auth/phone | POST | 绑定手机号 |
-| | /auth/me | GET | 获取当前用户 |
-| **计划** | /plans/current | GET | 获取本周计划 |
-| | /plans/:id | GET | 获取计划详情 |
-| | /plans/:id/days/:day | GET | 获取某日训练详情 |
-| **进度** | /progress/checkin | POST | 完成打卡 |
-| | /progress/set-complete | POST | 完成一组动作 |
-| | /progress/today | GET | 获取今日进度 |
-| **统计** | /stats/weekly | GET | 周统计 |
+| 模块 | 端点 | 方法 | 说明 | 状态 |
+|------|------|------|------|------|
+| **认证** | /api/auth/register | POST | 用户注册 | ✅ |
+| | /api/auth/login | POST | 用户登录 | ✅ |
+| | /api/auth/me | GET | 获取当前用户 | ✅ |
+| | /api/auth/refresh | POST | 刷新 Token | ✅ |
+| **计划** | /api/plans/current | GET | 获取当前计划 | ✅ |
+| | /api/plans/my | GET | 获取我的计划 | ✅ |
+| | /api/plans/:id | GET | 获取计划详情 | ✅ |
+| | /api/plans/:id/days/:day | GET | 获取某日训练详情 | ✅ |
+
+> **注意**: 进度/统计模块的 API 尚未实现，当前为前端模拟数据
 
 ### 4.2 认证模块
 
-#### POST /auth/wechat - 微信登录
+#### POST /api/auth/register - 用户注册
 
 **请求**:
 ```json
 {
-  "code": "wx_code_from_wechat"
+  "username": "testuser",
+  "password": "password123",
+  "confirmPassword": "password123",
+  "nickname": "测试用户"
 }
 ```
 
@@ -505,39 +404,34 @@ model Progress {
 {
   "success": true,
   "data": {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
     "user": {
       "id": "user-uuid",
-      "openid": "wx-openid",
-      "phone": null,
-      "nickname": null,
+      "username": "testuser",
+      "nickname": "测试用户",
       "avatar": null,
-      "isNewUser": true
-    }
+      "createdAt": "2026-03-03T10:00:00Z"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "expiresIn": 604800
   }
 }
 ```
 
-**错误**:
-```json
-{
-  "success": false,
-  "error": {
-    "code": "INVALID_CODE",
-    "message": "微信授权 code 无效"
-  }
-}
-```
+**错误码**:
+- `USERNAME_EXISTS` - 用户名已存在
+- `USERNAME_INVALID` - 用户名格式不正确（4-20字符，字母数字下划线）
+- `PASSWORD_INVALID` - 密码格式不正确（6-20字符，至少包含字母和数字）
+- `PASSWORD_MISMATCH` - 两次密码不一致
 
 ---
 
-#### POST /auth/phone - 绑定手机号
+#### POST /api/auth/login - 用户登录
 
 **请求**:
 ```json
 {
-  "encryptedData": "encrypted_phone_data",
-  "iv": "initialization_vector"
+  "username": "testuser",
+  "password": "password123"
 }
 ```
 
@@ -546,14 +440,25 @@ model Progress {
 {
   "success": true,
   "data": {
-    "phone": "138****8888"
+    "user": {
+      "id": "user-uuid",
+      "username": "testuser",
+      "nickname": "测试用户",
+      "avatar": null
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "expiresIn": 604800
   }
 }
 ```
 
+**错误码**:
+- `USER_NOT_FOUND` - 用户不存在
+- `PASSWORD_ERROR` - 密码错误
+
 ---
 
-#### GET /auth/me - 获取当前用户
+#### GET /api/auth/me - 获取当前用户
 
 **请求头**:
 ```
@@ -566,11 +471,30 @@ Authorization: Bearer <token>
   "success": true,
   "data": {
     "id": "user-uuid",
-    "openid": "wx-openid",
-    "phone": "138****8888",
-    "nickname": "张三",
-    "avatar": "https://...",
-    "createdAt": "2026-02-28T10:00:00Z"
+    "username": "testuser",
+    "nickname": "测试用户",
+    "avatar": null,
+    "createdAt": "2026-03-03T10:00:00Z"
+  }
+}
+```
+
+---
+
+#### POST /api/auth/refresh - 刷新 Token
+
+**请求头**:
+```
+Authorization: Bearer <token>
+```
+
+**响应**:
+```json
+{
+  "success": true,
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "expiresIn": 604800
   }
 }
 ```

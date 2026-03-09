@@ -14,7 +14,6 @@
 导航: React Navigation 6.x
 状态管理: Zustand 4.x
 网络请求: Axios 1.x
-微信SDK: react-native-wechat-lib 2.x
 视频播放: react-native-video 6.x
 推送通知: @notifee/react-native 7.x
 本地存储: AsyncStorage
@@ -29,7 +28,6 @@ UI组件库: React Native Paper 5.x
 数据库: SQLite 3.x
 ORM: Prisma 5.x
 认证: JWT
-微信SDK: co-wechat-api 2.x
 参数校验: Joi 17.x
 日志: Winston 3.x
 ```
