@@ -109,8 +109,9 @@ const FollowWorkoutScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const handleVideoEnd = () => {
-    // 视频播放完成，提示用户
-    setIsPlaying(false);
+    // 视频播放完成，继续循环播放（repeat=true 会自动重播）
+    // 不改变 isPlaying 状态，保持播放界面
+    console.log('视频一轮播放完成，继续循环');
   };
 
   if (isCompleted) {
