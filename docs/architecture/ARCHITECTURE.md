@@ -1,11 +1,9 @@
 # 自健身 App - 架构设计文档
 
-**版本**: v1.1  
+**版本**: v1.2  
 **架构师**: 梁构  
 **日期**: 2026-03-09  
 **开发周期**: 3 天 MVP
-
-> **⚠️ 重要更新 (2026-03-03)**: 登录方式已从微信登录改为用户名密码登录，详见 [CHANGE_LOG.md](../prd/CHANGE_LOG.md)
 
 ---
 
@@ -25,7 +23,6 @@
 | **UI 组件** | React Native Paper | 5.x | Material Design，快速开发 |
 
 **技术风险**：
-- ⚠️ react-native-wechat-lib 需要原生配置，首次集成可能耗时
 - ⚠️ 视频播放性能依赖设备，低端机型可能卡顿
 
 ---
@@ -67,7 +64,6 @@
 
 **技术风险**：
 - ⚠️ SQLite 不支持高并发，单用户场景没问题
-- ✅ 已移除微信登录依赖，降低集成复杂度
 
 ---
 
@@ -216,7 +212,8 @@ POST /api/auth/login → 验证用户 → 生成 JWT → 返回 token
 | 字段 | 类型 | 说明 | 约束 |
 |------|------|------|------|
 | id | String | 用户 ID（UUID） | PRIMARY KEY |
-| phone | String | 手机号 | UNIQUE |
+| username | String | 用户名 | UNIQUE, NOT NULL |
+| password | String | 密码（bcrypt 加密） | NOT NULL |
 | nickname | String | 昵称 | - |
 | avatar | String | 头像 URL | - |
 | createdAt | DateTime | 创建时间 | NOT NULL |
@@ -292,8 +289,8 @@ generator client {
 
 model User {
   id        String     @id @default(uuid())
-  openid    String     @unique
-  phone     String?    @unique
+  username  String     @unique
+  password  String
   nickname  String?
   avatar    String?
   createdAt DateTime   @default(now())
@@ -396,106 +393,6 @@ model Progress {
   "password": "password123",
   "confirmPassword": "password123",
   "nickname": "测试用户"
-}
-```
-
-**响应**:
-```json
-{
-  "success": true,
-  "data": {
-    "user": {
-      "id": "user-uuid",
-      "username": "testuser",
-      "nickname": "测试用户",
-      "avatar": null,
-      "createdAt": "2026-03-03T10:00:00Z"
-    },
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "expiresIn": 604800
-  }
-}
-```
-
-**错误码**:
-- `USERNAME_EXISTS` - 用户名已存在
-- `USERNAME_INVALID` - 用户名格式不正确（4-20字符，字母数字下划线）
-- `PASSWORD_INVALID` - 密码格式不正确（6-20字符，至少包含字母和数字）
-- `PASSWORD_MISMATCH` - 两次密码不一致
-
----
-
-#### POST /api/auth/login - 用户登录
-
-**请求**:
-```json
-{
-  "username": "testuser",
-  "password": "password123"
-}
-```
-
-**响应**:
-```json
-{
-  "success": true,
-  "data": {
-    "user": {
-      "id": "user-uuid",
-      "username": "testuser",
-      "nickname": "测试用户",
-      "avatar": null
-    },
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "expiresIn": 604800
-  }
-}
-```
-
-**错误码**:
-- `USER_NOT_FOUND` - 用户不存在
-- `PASSWORD_ERROR` - 密码错误
-
----
-
-#### GET /api/auth/me - 获取当前用户
-
-**请求头**:
-```
-Authorization: Bearer <token>
-```
-
-**响应**:
-```json
-{
-  "success": true,
-  "data": {
-    "id": "user-uuid",
-    "username": "testuser",
-    "nickname": "测试用户",
-    "avatar": null,
-    "createdAt": "2026-03-03T10:00:00Z"
-  }
-}
-```
-
----
-
-#### POST /api/auth/refresh - 刷新 Token
-
-**请求头**:
-```
-Authorization: Bearer <token>
-```
-
-**响应**:
-```json
-{
-  "success": true,
-  "data": {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "expiresIn": 604800
-  }
 }
 ```
 

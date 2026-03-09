@@ -28,9 +28,9 @@ cp .env.example .env
 ```
 
 主要配置项：
-- `WECHAT_APPID`: 微信开放平台 AppID
-- `WECHAT_APPSECRET`: 微信开放平台 AppSecret
-- `JWT_SECRET`: JWT 密钥
+- `JWT_SECRET`: JWT 密钥（必填）
+- `DATABASE_URL`: 数据库连接（默认 SQLite）
+- `PORT`: 服务端口（默认 3001）
 
 ### 3. 初始化数据库
 
@@ -67,8 +67,8 @@ npm start
 
 ### 认证接口
 
-- `POST /api/auth/wechat` - 微信登录
-- `POST /api/auth/phone` - 绑定手机号
+- `POST /api/auth/register` - 用户注册
+- `POST /api/auth/login` - 用户登录
 - `GET /api/auth/me` - 获取当前用户
 - `POST /api/auth/refresh` - 刷新 Token
 
@@ -211,4 +211,4 @@ MIT
 
 ---
 
-**最后更新**: 2026-03-01
+**最后更新**: 2026-03-09
