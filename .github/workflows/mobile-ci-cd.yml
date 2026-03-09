@@ -1,0 +1,207 @@
+name: Mobile CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'mobile/**'
+      - '.github/workflows/mobile-ci-cd.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'mobile/**'
+
+jobs:
+  test:
+    name: 🧪 测试
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./mobile
+        run: npm ci --legacy-peer-deps
+
+      - name: Run linter
+        working-directory: ./mobile
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Run tests
+        working-directory: ./mobile
+        run: npm test -- --passWithNoTests
+
+  build-apk:
+    name: 📱 构建 APK
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install dependencies
+        working-directory: ./mobile
+        run: npm ci --legacy-peer-deps
+
+      - name: Generate version name
+        id: version
+        run: |
+          VERSION_NAME="1.0.${{ github.run_number }}"
+          echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION_NAME"
+
+      - name: Build APK (Debug)
+        working-directory: ./mobile/android
+        run: |
+          ./gradlew assembleDebug
+          mv app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/zijianfit-${{ steps.version.outputs.version_name }}-debug.apk
+
+      - name: Build APK (Release)
+        working-directory: ./mobile/android
+        run: |
+          ./gradlew assembleRelease
+          mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/zijianfit-${{ steps.version.outputs.version_name }}-release.apk
+
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: zijianfit-debug-${{ steps.version.outputs.version_name }}
+          path: mobile/android/app/build/outputs/apk/debug/zijianfit-${{ steps.version.outputs.version_name }}-debug.apk
+
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: zijianfit-release-${{ steps.version.outputs.version_name }}
+          path: mobile/android/app/build/outputs/apk/release/zijianfit-${{ steps.version.outputs.version_name }}-release.apk
+
+  create-release:
+    name: 📦 创建 Release
+    needs: build-apk
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Debug APK
+        uses: actions/download-artifact@v4
+        with:
+          name: zijianfit-debug-${{ steps.version.outputs.version_name || 'latest' }}
+          path: ./apk-debug
+
+      - name: Download Release APK
+        uses: actions/download-artifact@v4
+        with:
+          name: zijianfit-release-${{ steps.version.outputs.version_name || 'latest' }}
+          path: ./apk-release
+
+      - name: Generate version name
+        id: version
+        run: |
+          VERSION_NAME="1.0.${{ github.run_number }}"
+          echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.version.outputs.version_name }}
+          name: ZijianFit v${{ steps.version.outputs.version_name }}
+          body: |
+            ## 🏋️ ZijianFit v${{ steps.version.outputs.version_name }}
+            
+            ### 📥 下载
+            - **Debug 版本**: zijianfit-${{ steps.version.outputs.version_name }}-debug.apk
+            - **Release 版本**: zijianfit-${{ steps.version.outputs.version_name }}-release.apk
+            
+            ### 📝 更新内容
+            ${{ github.event.head_commit.message }}
+            
+            ### 🔗 相关信息
+            - 提交: ${{ github.sha }}
+            - 分支: ${{ github.ref }}
+            - 时间: ${{ github.event.head_commit.timestamp }}
+            
+            ---
+            🦞 随行 CI/CD
+          files: |
+            ./apk-debug/*.apk
+            ./apk-release/*.apk
+          draft: false
+          prerelease: false
+
+  notify-success:
+    name: ✅ 通知构建成功
+    needs: create-release
+    runs-on: ubuntu-latest
+    if: success()
+    
+    steps:
+      - name: Send notification
+        uses: appleboy/telegram-action@master
+        continue-on-error: true
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            ✅ **ZijianFit Mobile 构建成功**
+            
+            🏷️ 版本: v1.0.${{ github.run_number }}
+            🌿 分支: ${{ github.ref }}
+            📅 时间: ${{ github.event.head_commit.timestamp }}
+            
+            📥 下载: ${{ github.server_url }}/${{ github.repository }}/releases/tag/v1.0.${{ github.run_number }}
+            
+            🦞 随行 CI/CD
+
+  notify-failure:
+    name: ❌ 通知构建失败
+    needs: [test, build-apk]
+    runs-on: ubuntu-latest
+    if: failure()
+    
+    steps:
+      - name: Send notification
+        uses: appleboy/telegram-action@master
+        continue-on-error: true
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            ❌ **ZijianFit Mobile 构建失败**
+            
+            🏷️ 版本: ${{ github.sha }}
+            🌿 分支: ${{ github.ref }}
+            🔗 查看日志: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            
+            🦞 随行 CI/CD
