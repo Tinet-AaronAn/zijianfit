@@ -1,7 +1,7 @@
 # 技术栈选型总结
 
-**版本**: v1.0  
-**日期**: 2026-02-28
+**版本**: v1.1  
+**日期**: 2026-03-09
 
 ---
 
@@ -27,7 +27,8 @@ UI组件库: React Native Paper 5.x
 框架: Koa 2.x
 数据库: SQLite 3.x
 ORM: Prisma 5.x
-认证: JWT
+认证: JWT（用户名密码）
+密码加密: bcrypt
 参数校验: Joi 17.x
 日志: Winston 3.x
 ```
@@ -49,11 +50,11 @@ npx prisma init --datasource-provider sqlite
 # 认证
 npm install jsonwebtoken bcryptjs
 
-# 微信
-npm install co-wechat-api
+# 参数校验
+npm install joi
 
 # 工具
-npm install dotenv joi winston axios
+npm install dotenv winston
 ```
 
 ### 前端
@@ -69,14 +70,8 @@ npm install zustand
 # 网络
 npm install axios
 
-# 微信
-npm install react-native-wechat-lib
-
 # 视频
 npm install react-native-video
-
-# 推送
-npm install @notifee/react-native
 
 # 存储
 npm install @react-native-async-storage/async-storage
@@ -84,47 +79,6 @@ npm install @react-native-async-storage/async-storage
 # UI
 npm install react-native-paper
 npm install react-native-vector-icons
-```
-
----
-
-## 微信登录配置
-
-### 1. 微信开放平台设置
-
-1. 注册微信开放平台账号：https://open.weixin.qq.com/
-2. 创建移动应用
-3. 获取 AppID 和 AppSecret
-4. 配置应用签名
-
-### 2. Android 配置
-
-**android/app/build.gradle**:
-```gradle
-android {
-    defaultConfig {
-        manifestPlaceholders = [
-            WXAPPID: "wx1234567890abcdef"
-        ]
-    }
-}
-```
-
-**android/app/src/main/AndroidManifest.xml**:
-```xml
-<activity
-    android:name=".wxapi.WXEntryActivity"
-    android:label="@string/app_name"
-    android:exported="true">
-</activity>
-```
-
-### 3. 后端配置
-
-**.env**:
-```bash
-WECHAT_APPID=wx1234567890abcdef
-WECHAT_APPSECRET=your_app_secret_here
 ```
 
 ---
@@ -166,16 +120,20 @@ npx prisma studio
 ### 认证
 
 ```bash
-# 微信登录
-POST /auth/wechat
-Body: { "code": "wx_code" }
+# 用户注册
+POST /auth/register
+Body: { "username": "...", "password": "...", "confirmPassword": "..." }
 
-# 绑定手机号
-POST /auth/phone
-Body: { "encryptedData": "...", "iv": "..." }
+# 用户登录
+POST /auth/login
+Body: { "username": "...", "password": "..." }
 
 # 获取用户信息
 GET /auth/me
+Headers: { "Authorization": "Bearer <token>" }
+
+# 刷新 Token
+POST /auth/refresh
 Headers: { "Authorization": "Bearer <token>" }
 ```
 
@@ -216,7 +174,7 @@ GET /stats/weekly?weekNumber=9&year=2026
 
 ```bash
 mkdir -p backend/src/{config,prisma,middlewares,routes,services,utils}
-touch backend/src/{app.js,config/index.js}
+touch backend/src/{app.ts,config/index.ts}
 touch backend/.env .env.example package.json README.md
 ```
 
@@ -224,7 +182,7 @@ touch backend/.env .env.example package.json README.md
 
 ```bash
 mkdir -p mobile/src/{screens,components/{common},navigation,store,services,utils,constants}
-touch mobile/src/{App.js}
+touch mobile/src/{App.tsx}
 touch mobile/package.json README.md
 ```
 
@@ -247,65 +205,52 @@ touch mobile/package.json README.md
 
 ### Day 0（开始前）
 
-- [ ] 微信开放平台账号已注册
-- [ ] AppID 和 AppSecret 已获取
-- [ ] Android 应用签名已配置
-- [ ] 测试手机已准备（Android）
+- [x] Node.js 18+ 已安装
+- [x] React Native CLI 已安装
+- [x] Android 模拟器已配置
+- [x] 测试手机已准备（Android）
 
 ### Day 1
 
-- [ ] react-native-wechat-lib 原生配置成功
-- [ ] 微信登录测试通过
-- [ ] 后端 API 可访问
+- [x] 后端 API 开发完成
+- [x] 用户认证测试通过
+- [x] 前端项目初始化
 
 ### Day 2
 
-- [ ] 视频播放正常
-- [ ] 数据库迁移成功
-- [ ] 核心流程跑通
+- [x] 视频播放正常
+- [x] 数据库迁移成功
+- [x] 核心流程跑通
 
 ### Day 3
 
-- [ ] 推送通知配置
-- [ ] UI 细节调整
-- [ ] APK 打包成功
+- [x] CI/CD 配置
+- [x] Docker 部署
+- [x] UI 细节调整
 
 ---
 
 ## 常见问题
 
-### Q1: 微信登录失败？
-
-**原因**: 应用签名不匹配
-
-**解决**: 
-```bash
-# 下载签名获取工具
-https://open.weixin.qq.com/zh_CN/htmledition/res/dev/download/sdk/Gen_Signature_Android.apk
-
-# 安装到手机，输入包名获取签名
-# 在微信开放平台配置签名
-```
-
-### Q2: 视频加载慢？
+### Q1: 视频加载慢？
 
 **原因**: 视频文件太大
 
 **解决**:
 - 压缩视频（推荐 HandBrake）
-- 使用 CDN 加速
+- 使用本地视频文件
 - 预加载第一个视频
 
-### Q3: SQLite 数据丢失？
+### Q2: SQLite 数据丢失？
 
-**原因**: 数据库文件未提交到 Git
+**原因**: 数据库文件未备份
 
 **解决**:
 - 定期备份 `dev.db` 文件
 - 使用 Git LFS 管理数据库文件
 - 或使用云数据库（PostgreSQL）
 
-### Q4: 推送通知不工作？
+### Q3: 推送通知不工作？
 
 **原因**: 权限未授权
 
@@ -325,17 +270,12 @@ await notifee.requestPermission();
    - 初始化 React Native 项目
    - 初始化 Node.js 项目
 
-2. **配置微信**（1 小时）
-   - 安装 react-native-wechat-lib
-   - 配置原生代码
-   - 测试登录
-
-3. **搭建后端**（2 小时）
+2. **搭建后端**（2 小时）
    - 初始化 Prisma
    - 创建数据模型
    - 实现认证 API
 
-4. **前端开发**（1 天）
+3. **前端开发**（1 天）
    - 实现页面
    - 对接 API
    - 集成视频
@@ -343,4 +283,4 @@ await notifee.requestPermission();
 ---
 
 **维护者**: 梁构  
-**更新**: 随项目进展持续更新
+**更新**: 2026-03-09
