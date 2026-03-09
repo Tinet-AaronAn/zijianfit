@@ -197,18 +197,35 @@ npm run android
 
 ## 📚 文档索引
 
+### 用户文档
+- [用户使用手册](../USER_GUIDE.md) - 面向最终用户的完整指南
+- [快速开始](../QUICKSTART.md) - 5 分钟快速上手
+- [常见问题](./FAQ.md) - FAQ 解答
+
+### 开发者文档
+- [后端 API 示例](../backend/API_EXAMPLES.md) - API 使用示例
+- [功能详细说明](./FUNCTIONALITY.md) - 功能设计和实现
+
 ### 产品文档
-- [产品需求文档](docs/prd/PRD.md)
-- [需求变更记录](docs/prd/CHANGE_LOG.md)
+- [产品需求文档](./prd/PRD.md)
+- [需求变更记录](./prd/CHANGE_LOG.md)
 
 ### 技术文档
-- [系统架构](docs/architecture/ARCHITECTURE.md)
-- [技术栈选型](docs/architecture/TECH_STACK.md)
-- [CI/CD 配置指南](docs/CI-CD-SETUP.md)
+- [系统架构](./architecture/ARCHITECTURE.md)
+- [技术栈选型](./architecture/TECH_STACK.md)
+- [CI/CD 配置指南](./CI-CD-SETUP.md)
 
 ### 设计文档
-- [UI 设计规范](docs/design/UI-DESIGN.md)
-- [登录重设计](docs/design/LOGIN_REDESIGN.md)
+- [UI 设计规范](./design/UI-DESIGN.md)
+- [登录重设计](./design/LOGIN_REDESIGN.md)
+- [快速参考](./design/QUICK-REFERENCE.md)
+
+### 测试文档
+- [测试场景规划](./testing/TEST_SCENARIOS.md)
+- [集成测试计划](./testing/INTEGRATION_TEST_PLAN.md)
+
+### 部署文档
+- [Docker 部署指南](../backend/DOCKER_DEPLOYMENT.md)
 
 ---
 
