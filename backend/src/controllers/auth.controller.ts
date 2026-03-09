@@ -195,9 +195,13 @@ export async function refreshToken(ctx: Context) {
       return;
     }
 
-    // 生成新的 JWT token
+    // 生成新的 JWT token（添加随机 jti 确保每次生成的 token 都不同）
     const token = jwt.sign(
-      { id: user.id, username: user.username },
+      { 
+        id: user.id, 
+        username: user.username,
+        jti: Math.random().toString(36).substring(2) // 随机 JWT ID
+      },
       String(config.jwt.secret),
       { expiresIn: '7d' }
     );
