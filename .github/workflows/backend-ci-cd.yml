@@ -19,7 +19,7 @@ jobs:
   test:
     name: 🧪 测试
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,7 +49,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
+
     permissions:
       contents: read
       packages: write
@@ -88,89 +88,5 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  deploy:
-    name: 🚀 部署到生产服务器
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
-    steps:
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: ${{ secrets.SERVER_PORT || 22 }}
-          script: |
-            # 拉取最新镜像
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            
-            # 停止旧容器（如果存在）
-            docker stop zijianfit-backend || true
-            docker rm zijianfit-backend || true
-            
-            # 启动新容器
-            docker run -d \
-              --name zijianfit-backend \
-              --restart unless-stopped \
-              -p ${{ secrets.BACKEND_PORT || 3001 }}:3001 \
-              -v /opt/zijianfit/data:/app/data \
-              -v /opt/zijianfit/videos:/app/public/videos \
-              -e NODE_ENV=production \
-              -e DATABASE_URL=file:/app/data/prod.db \
-              -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
-              -e JWT_EXPIRES_IN=7d \
-              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            
-            # 清理旧镜像
-            docker image prune -f
-
-      - name: Health check
-        run: |
-          sleep 10
-          curl -f http://${{ secrets.SERVER_HOST }}:${{ secrets.BACKEND_PORT || 3001 }}/health || exit 1
-
-  notify-success:
-    name: ✅ 通知部署成功
-    needs: deploy
-    runs-on: ubuntu-latest
-    if: success()
-    
-    steps:
-      - name: Send notification
-        uses: appleboy/telegram-action@master
-        continue-on-error: true
-        with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          message: |
-            ✅ **ZijianFit Backend 部署成功**
-            
-            🏷️ 版本: ${{ github.sha }}
-            🌿 分支: ${{ github.ref }}
-            📅 时间: ${{ github.event.head_commit.timestamp }}
-            
-            🦞 随行 CI/CD
-
-  notify-failure:
-    name: ❌ 通知部署失败
-    needs: [test, build-and-push, deploy]
-    runs-on: ubuntu-latest
-    if: failure()
-    
-    steps:
-      - name: Send notification
-        uses: appleboy/telegram-action@master
-        continue-on-error: true
-        with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          message: |
-            ❌ **ZijianFit Backend 部署失败**
-            
-            🏷️ 版本: ${{ github.sha }}
-            🌿 分支: ${{ github.ref }}
-            🔗 查看日志: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-            
-            🦞 随行 CI/CD
+      - name: Image digest
+        run: echo ${{ steps.meta.outputs.tags }}

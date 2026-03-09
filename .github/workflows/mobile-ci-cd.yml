@@ -15,7 +15,7 @@ jobs:
   test:
     name: 🧪 测试
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,7 +45,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -106,7 +106,7 @@ jobs:
     needs: build-apk
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
+
     permissions:
       contents: write
 
@@ -114,23 +114,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download Debug APK
-        uses: actions/download-artifact@v4
-        with:
-          name: zijianfit-debug-${{ steps.version.outputs.version_name || 'latest' }}
-          path: ./apk-debug
-
-      - name: Download Release APK
-        uses: actions/download-artifact@v4
-        with:
-          name: zijianfit-release-${{ steps.version.outputs.version_name || 'latest' }}
-          path: ./apk-release
-
       - name: Generate version name
         id: version
         run: |
           VERSION_NAME="1.0.${{ github.run_number }}"
           echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
+
+      - name: Download Debug APK
+        uses: actions/download-artifact@v4
+        with:
+          name: zijianfit-debug-${{ steps.version.outputs.version_name }}
+          path: ./apk-debug
+
+      - name: Download Release APK
+        uses: actions/download-artifact@v4
+        with:
+          name: zijianfit-release-${{ steps.version.outputs.version_name }}
+          path: ./apk-release
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -139,19 +139,19 @@ jobs:
           name: ZijianFit v${{ steps.version.outputs.version_name }}
           body: |
             ## 🏋️ ZijianFit v${{ steps.version.outputs.version_name }}
-            
+
             ### 📥 下载
             - **Debug 版本**: zijianfit-${{ steps.version.outputs.version_name }}-debug.apk
             - **Release 版本**: zijianfit-${{ steps.version.outputs.version_name }}-release.apk
-            
+
             ### 📝 更新内容
             ${{ github.event.head_commit.message }}
-            
+
             ### 🔗 相关信息
             - 提交: ${{ github.sha }}
             - 分支: ${{ github.ref }}
             - 时间: ${{ github.event.head_commit.timestamp }}
-            
+
             ---
             🦞 随行 CI/CD
           files: |
@@ -159,49 +159,3 @@ jobs:
             ./apk-release/*.apk
           draft: false
           prerelease: false
-
-  notify-success:
-    name: ✅ 通知构建成功
-    needs: create-release
-    runs-on: ubuntu-latest
-    if: success()
-    
-    steps:
-      - name: Send notification
-        uses: appleboy/telegram-action@master
-        continue-on-error: true
-        with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          message: |
-            ✅ **ZijianFit Mobile 构建成功**
-            
-            🏷️ 版本: v1.0.${{ github.run_number }}
-            🌿 分支: ${{ github.ref }}
-            📅 时间: ${{ github.event.head_commit.timestamp }}
-            
-            📥 下载: ${{ github.server_url }}/${{ github.repository }}/releases/tag/v1.0.${{ github.run_number }}
-            
-            🦞 随行 CI/CD
-
-  notify-failure:
-    name: ❌ 通知构建失败
-    needs: [test, build-apk]
-    runs-on: ubuntu-latest
-    if: failure()
-    
-    steps:
-      - name: Send notification
-        uses: appleboy/telegram-action@master
-        continue-on-error: true
-        with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          message: |
-            ❌ **ZijianFit Mobile 构建失败**
-            
-            🏷️ 版本: ${{ github.sha }}
-            🌿 分支: ${{ github.ref }}
-            🔗 查看日志: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-            
-            🦞 随行 CI/CD
