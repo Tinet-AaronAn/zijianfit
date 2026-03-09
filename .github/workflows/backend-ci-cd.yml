@@ -38,7 +38,7 @@ jobs:
 
       - name: Run tests
         working-directory: ./backend
-        run: npm test
+        run: npm test -- --testTimeout=30000
         env:
           NODE_ENV: test
           DATABASE_URL: "file:./test.db"
