@@ -10,7 +10,6 @@ import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import HomeScreen from '../screens/HomeScreen';
 import WorkoutDetailScreen from '../screens/WorkoutDetailScreen';
-import WorkoutSessionScreen from '../screens/WorkoutSessionScreen';
 import FollowWorkoutScreen from '../screens/FollowWorkoutScreen';
 import StatsScreen from '../screens/StatsScreen';
 
