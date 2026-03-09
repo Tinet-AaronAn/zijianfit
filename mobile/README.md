@@ -110,6 +110,35 @@ export const apiConfig = {
 - **targetSdkVersion**: 34
 - **NDK**: 26.1.10909125
 
+## ⚙️ 配置
+
+### 后端服务地址配置
+
+详细配置说明请查看：[CONFIGURATION.md](./CONFIGURATION.md)
+
+**快速配置**：
+
+1. 打开 `src/constants/index.ts`
+2. 修改 `apiConfig.baseURL`
+3. 重新编译应用
+
+```typescript
+export const apiConfig = {
+  baseURL: 'http://10.0.2.2:3001/api',  // ← 修改这里
+  timeout: 10000,
+};
+```
+
+**常见配置**：
+- Android 模拟器：`http://10.0.2.2:3001/api`
+- iOS 模拟器：`http://localhost:3001/api`
+- 真机测试：`http://192.168.1.xxx:3001/api`
+- 生产环境：`https://api.yourdomain.com/api`
+
+**注意**：修改 API 地址后必须重新编译 APK
+
+---
+
 ## 🐛 故障排查
 
 ### Metro Bundler 启动失败
