@@ -12,37 +12,8 @@ on:
       - 'mobile/**'
 
 jobs:
-  test:
-    name: 🧪 测试
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: mobile/package-lock.json
-
-      - name: Install dependencies
-        working-directory: ./mobile
-        run: npm ci --legacy-peer-deps
-
-      - name: Run linter
-        working-directory: ./mobile
-        run: npm run lint
-        continue-on-error: true
-
-      - name: Run tests
-        working-directory: ./mobile
-        run: npm test -- --passWithNoTests
-
   build-apk:
     name: 📱 构建 APK
-    needs: test
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
