@@ -5,8 +5,8 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# 安装 OpenSSL 和构建工具（Prisma 需要）
-RUN apk add --no-cache openssl libc6-compat
+# 安装 OpenSSL 1.1 兼容库（Prisma 需要）
+RUN apk add --no-cache openssl1.1-compat libc6-compat
 
 # 复制 package 文件
 COPY package*.json ./
@@ -31,8 +31,8 @@ FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# 安装运行时依赖（Prisma 需要 OpenSSL）
-RUN apk add --no-cache openssl libc6-compat
+# 安装 OpenSSL 1.1 兼容库（Prisma 运行时需要）
+RUN apk add --no-cache openssl1.1-compat libc6-compat
 
 # 创建非 root 用户
 RUN addgroup --system --gid 1001 nodejs \
