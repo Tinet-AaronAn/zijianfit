@@ -1,0 +1,76 @@
+name: ZijianFit Backend CI/CD
+
+triggers:
+  push:
+    branches:
+      - main
+    paths:
+      include:
+        - backend/**
+
+stages:
+  - name: 测试
+    jobs:
+      - name: 后端测试
+        runsOn: public/cn-beijing
+        steps:
+          - step: checkout@1
+            name: 拉取代码
+          
+          - step: node@1
+            name: 设置 Node.js
+            with:
+              nodeVersion: 20
+          
+          - step: shell@1
+            name: 安装依赖
+            with:
+              script: |
+                cd backend
+                npm ci
+          
+          - step: shell@1
+            name: 生成 Prisma Client
+            with:
+              script: |
+                cd backend
+                npx prisma generate
+          
+          - step: shell@1
+            name: 运行测试
+            with:
+              script: |
+                cd backend
+                npm test
+
+  - name: 构建镜像
+    jobs:
+      - name: 构建并推送
+        runsOn: public/cn-beijing
+        steps:
+          - step: checkout@1
+            name: 拉取代码
+          
+          - step: docker@1
+            name: 登录阿里云镜像仓库
+            with:
+              registry: registry.cn-beijing.aliyuncs.com
+              username: ${PIPELINE_ID}
+              password: ${PIPELINE_TOKEN}
+          
+          - step: docker@1
+            name: 构建镜像
+            with:
+              context: backend
+              dockerfile: backend/Dockerfile
+              tags: |
+                registry.cn-beijing.aliyuncs.com/anjb/zijianfit-backend:latest
+                registry.cn-beijing.aliyuncs.com/anjb/zijianfit-backend:${DATETIME}
+          
+          - step: docker@1
+            name: 推送镜像
+            with:
+              push: true
+              tags: |
+                registry.cn-beijing.aliyuncs.com/anjb/zijianfit-backend:latest
+                registry.cn-beijing.aliyuncs.com/anjb/zijianfit-backend:${DATETIME}

@@ -1,6 +1,6 @@
 services:
   backend:
-    image: ghcr.io/tinet-aaronan/zijianfit/backend:latest
+    image: registry.cn-beijing.aliyuncs.com/anjb/zijianfit-backend:latest
     container_name: zijianfit-backend
     restart: unless-stopped
     ports:

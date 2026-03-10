@@ -1,0 +1,78 @@
+name: ZijianFit Mobile CI/CD
+
+triggers:
+  push:
+    branches:
+      - main
+    paths:
+      include:
+        - mobile/**
+
+stages:
+  - name: 测试
+    jobs:
+      - name: 移动端测试
+        runsOn: public/cn-beijing
+        steps:
+          - step: checkout@1
+            name: 拉取代码
+          
+          - step: node@1
+            name: 设置 Node.js
+            with:
+              nodeVersion: 20
+          
+          - step: shell@1
+            name: 安装依赖
+            with:
+              script: |
+                cd mobile
+                npm ci
+          
+          - step: shell@1
+            name: Lint 检查
+            with:
+              script: |
+                cd mobile
+                npm run lint
+          
+          - step: shell@1
+            name: 运行测试
+            with:
+              script: |
+                cd mobile
+                npm test
+
+  - name: 构建 APK
+    jobs:
+      - name: 构建 Android APK
+        runsOn: public/cn-beijing
+        steps:
+          - step: checkout@1
+            name: 拉取代码
+          
+          - step: node@1
+            name: 设置 Node.js
+            with:
+              nodeVersion: 20
+          
+          - step: shell@1
+            name: 安装依赖
+            with:
+              script: |
+                cd mobile
+                npm ci
+          
+          - step: shell@1
+            name: 构建 APK
+            with:
+              script: |
+                cd mobile/android
+                chmod +x gradlew
+                ./gradlew assembleRelease
+          
+          - step: artifact@1
+            name: 上传 APK
+            with:
+              path: mobile/android/app/build/outputs/apk/release/app-release.apk
+              name: zijianfit-mobile.apk
