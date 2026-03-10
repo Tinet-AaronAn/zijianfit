@@ -1,12 +1,15 @@
 # ========================================
 # 阶段 1: 构建阶段
 # ========================================
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 
 WORKDIR /app
 
-# 安装 OpenSSL 1.1 兼容库（Prisma 需要）
-RUN apk add --no-cache openssl1.1-compat libc6-compat
+# 安装 OpenSSL 和构建工具（Prisma 需要）
+RUN apt-get update && apt-get install -y \
+    openssl \
+    libssl3 \
+    && rm -rf /var/lib/apt/lists/*
 
 # 复制 package 文件
 COPY package*.json ./
@@ -27,16 +30,19 @@ RUN npm run build
 # ========================================
 # 阶段 2: 运行阶段
 # ========================================
-FROM node:20-alpine AS runner
+FROM node:20-slim AS runner
 
 WORKDIR /app
 
-# 安装 OpenSSL 1.1 兼容库（Prisma 运行时需要）
-RUN apk add --no-cache openssl1.1-compat libc6-compat
+# 安装运行时依赖（Prisma 需要 OpenSSL）
+RUN apt-get update && apt-get install -y \
+    openssl \
+    libssl3 \
+    && rm -rf /var/lib/apt/lists/*
 
 # 创建非 root 用户
-RUN addgroup --system --gid 1001 nodejs \
-    && adduser --system --uid 1001 backend
+RUN groupadd --system --gid 1001 nodejs \
+    && useradd --system --uid 1001 --gid nodejs backend
 
 # 创建数据目录
 RUN mkdir -p /app/data && chown -R backend:nodejs /app/data
