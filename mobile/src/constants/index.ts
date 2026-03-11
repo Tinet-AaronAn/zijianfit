@@ -78,6 +78,6 @@ export const apiConfig = {
   // 开发环境使用本地服务器，生产环境使用实际服务器
   // Android 模拟器访问宿主机: http://10.0.2.2
   // iOS 模拟器访问本机: http://localhost
-  baseURL: 'http://10.0.2.2:3001/api',
+  baseURL: 'http://www.flyflux.cn:3001/api',
   timeout: 10000,
 };
