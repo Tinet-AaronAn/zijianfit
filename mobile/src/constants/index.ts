@@ -74,10 +74,27 @@ export const shadows = {
 };
 
 // API配置
+import { Platform } from 'react-native';
+
+// 开发环境 API 地址
+// 真机测试时，修改为你电脑的局域网 IP
+const DEV_API_URL = 'http://10.0.2.2:3001/api';
+
+// 生产环境 API 地址
+const PROD_API_URL = 'http://www.flyflux.cn:3001/api';
+
+// 根据平台自动选择 API 地址
+const getBaseURL = () => {
+  // 生产环境
+  if (__DEV__ === false) {
+    return PROD_API_URL;
+  }
+
+  // 开发环境
+  return DEV_API_URL;
+};
+
 export const apiConfig = {
-  // 开发环境使用本地服务器，生产环境使用实际服务器
-  // Android 模拟器访问宿主机: http://10.0.2.2
-  // iOS 模拟器访问本机: http://localhost
-  baseURL: 'http://www.flyflux.cn:3001/api',
+  baseURL: getBaseURL(),
   timeout: 10000,
 };
