@@ -2,13 +2,15 @@
 <network-security-config>
     <!-- 开发环境：允许 HTTP 明文传输 -->
     <domain-config cleartextTrafficPermitted="true">
+        <!-- 生产环境域名 -->
+        <domain includeSubdomains="true">www.flyflux.cn</domain>
+        <domain includeSubdomains="true">flyflux.cn</domain>
         <!-- Android 模拟器访问宿主机 -->
         <domain includeSubdomains="true">10.0.2.2</domain>
         <!-- 本地回环 -->
         <domain includeSubdomains="true">localhost</domain>
         <domain includeSubdomains="true">127.0.0.1</domain>
         <!-- 局域网 IP（开发测试） -->
-        <!-- 允许所有私有 IP 段的 HTTP 访问 -->
         <domain includeSubdomains="true">192.168.0.0</domain>
         <domain includeSubdomains="true">192.168.1.0</domain>
         <domain includeSubdomains="true">172.16.0.0</domain>
