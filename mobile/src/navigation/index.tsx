@@ -23,7 +23,6 @@ export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   WorkoutDetail: { planId: string; dayOfWeek: number };
-  WorkoutSession: { planId: string; exercises: any[] };
   FollowWorkout: {
     id: string;
     planId: string;
@@ -131,14 +130,6 @@ const MainStack = () => {
           headerStyle: {
             backgroundColor: colors.card,
           },
-        }}
-      />
-      <Stack.Screen
-        name="WorkoutSession"
-        component={WorkoutSessionScreen}
-        options={{
-          headerShown: false,
-          gestureEnabled: false,
         }}
       />
       <Stack.Screen

@@ -74,15 +74,6 @@ const WorkoutDetailScreen: React.FC<Props> = ({ route, navigation }) => {
     }
   };
 
-  const handleStartWorkout = () => {
-    if (!plan) return;
-
-    navigation.navigate('WorkoutSession', {
-      planId: plan.id,
-      exercises: plan.exercises
-    });
-  };
-
   const handleFollowWorkout = () => {
     if (!plan) return;
 
@@ -133,14 +124,7 @@ const WorkoutDetailScreen: React.FC<Props> = ({ route, navigation }) => {
     });
   };
 
-  // 判断是否显示跟练模式
-  const shouldShowFollowMode = () => {
-    if (!plan) return false;
-    // 周一、周三、周五、周日都支持跟练模式
-    return [1, 3, 5, 7].includes(plan.dayOfWeek);
-  };
-
-  if (isLoading) {
+  if (!plan) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
@@ -245,23 +229,9 @@ const WorkoutDetailScreen: React.FC<Props> = ({ route, navigation }) => {
 
       {/* 底部按钮 */}
       <View style={styles.footer}>
-        {shouldShowFollowMode() ? (
-          <>
-            {/* 跟练模式按钮（优先） */}
-            <TouchableOpacity style={styles.followButton} onPress={handleFollowWorkout}>
-              <Text style={styles.followButtonText}>🎬 跟练模式</Text>
-            </TouchableOpacity>
-            {/* 经典模式按钮 */}
-            <TouchableOpacity style={styles.classicButton} onPress={handleStartWorkout}>
-              <Text style={styles.classicButtonText}>经典模式</Text>
-            </TouchableOpacity>
-          </>
-        ) : (
-          /* 只有经典模式 */
-          <TouchableOpacity style={styles.startButton} onPress={handleStartWorkout}>
-            <Text style={styles.startButtonText}>开始训练</Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity style={styles.startButton} onPress={handleFollowWorkout}>
+          <Text style={styles.startButtonText}>🎬 开始跟练</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
