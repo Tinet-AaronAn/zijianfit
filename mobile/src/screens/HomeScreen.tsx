@@ -12,6 +12,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, fontSize, spacing, borderRadius } from '../constants';
 import { useAuthStore } from '../stores/useAuthStore';
 import api from '../services/api';
+import DayPickerModal from '../components/DayPickerModal';
 
 type Props = NativeStackScreenProps<any, 'Home'>;
 
@@ -37,6 +38,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [weeklyPlans, setWeeklyPlans] = useState<WorkoutPlan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [dayPickerVisible, setDayPickerVisible] = useState(false);
 
   const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
   const today = new Date().getDay();
@@ -72,6 +74,13 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleLogout = () => {
     logout();
+  };
+
+  const handleSelectDay = (day: { planId: string; dayOfWeek: number }) => {
+    navigation.navigate('WorkoutDetail', {
+      planId: day.planId,
+      dayOfWeek: day.dayOfWeek,
+    });
   };
 
   if (isLoading) {
@@ -129,7 +138,13 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.restCard}>
             <Text style={styles.restEmoji}>😴</Text>
             <Text style={styles.restTitle}>今天是休息日</Text>
-            <Text style={styles.restDescription}>好好休息，明天继续加油！</Text>
+            <Text style={styles.restDescription}>好好休息，或选择其他天的训练</Text>
+            <TouchableOpacity
+              style={styles.pickDayButton}
+              onPress={() => setDayPickerVisible(true)}
+            >
+              <Text style={styles.pickDayButtonText}>📋 选择训练</Text>
+            </TouchableOpacity>
           </View>
         )}
       </View>
@@ -192,13 +207,29 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
           <TouchableOpacity
             style={styles.quickActionCard}
-            onPress={() => {}}
+            onPress={() => setDayPickerVisible(true)}
           >
             <Text style={styles.quickActionIcon}>🎯</Text>
-            <Text style={styles.quickActionTitle}>训练目标</Text>
+            <Text style={styles.quickActionTitle}>选择训练</Text>
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* 选择训练日弹窗 */}
+      <DayPickerModal
+        visible={dayPickerVisible}
+        onClose={() => setDayPickerVisible(false)}
+        days={weeklyPlans.map(p => ({
+          dayOfWeek: p.dayOfWeek,
+          title: p.title,
+          isRestDay: p.isRestDay || false,
+          exerciseCount: p.exerciseCount || p.exercises?.length || 0,
+          duration: p.totalDuration || p.duration || 0,
+          planId: p.planId,
+        }))}
+        onSelectDay={handleSelectDay}
+        today={today}
+      />
     </ScrollView>
   );
 };
@@ -311,6 +342,19 @@ const styles = StyleSheet.create({
   restDescription: {
     fontSize: fontSize.base,
     color: colors.text.secondary,
+    marginBottom: spacing.md,
+  },
+  pickDayButton: {
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.md,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    marginTop: spacing.sm,
+  },
+  pickDayButtonText: {
+    fontSize: fontSize.base,
+    fontWeight: '600',
+    color: colors.text.inverse,
   },
   weekGrid: {
     flexDirection: 'row',
