@@ -5,7 +5,7 @@ import {
   StyleSheet,
   Modal,
   TouchableOpacity,
-  FlatList,
+  ScrollView,
 } from 'react-native';
 import { colors, fontSize, spacing, borderRadius } from '../constants';
 
@@ -35,46 +35,6 @@ const DayPickerModal: React.FC<DayPickerModalProps> = ({
   onSelectDay,
   today,
 }) => {
-  const renderDay = ({ item }: { item: DayOption }) => {
-    const isToday = item.dayOfWeek === today;
-    return (
-      <TouchableOpacity
-        style={[styles.dayRow, isToday && styles.dayRowToday]}
-        onPress={() => {
-          onSelectDay(item);
-          onClose();
-        }}
-        activeOpacity={0.7}
-      >
-        <View style={styles.dayRowLeft}>
-          <View style={[styles.dayBadge, isToday && styles.dayBadgeToday]}>
-            <Text style={[styles.dayBadgeText, isToday && styles.dayBadgeTextToday]}>
-              {dayNames[item.dayOfWeek]}
-            </Text>
-          </View>
-          {isToday && <Text style={styles.todayTag}>今天</Text>}
-        </View>
-        <View style={styles.dayRowCenter}>
-          <Text style={[styles.dayRowTitle, item.isRestDay && styles.restText]}>
-            {item.title}
-          </Text>
-          {!item.isRestDay && (
-            <Text style={styles.dayRowMeta}>
-              💪 {item.exerciseCount}个动作 · ⏱️ {item.duration}分钟
-            </Text>
-          )}
-        </View>
-        <View style={styles.dayRowRight}>
-          {item.isRestDay ? (
-            <Text style={styles.restBadge}>休息</Text>
-          ) : (
-            <Text style={styles.goArrow}>→</Text>
-          )}
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
   return (
     <Modal
       visible={visible}
@@ -82,8 +42,16 @@ const DayPickerModal: React.FC<DayPickerModalProps> = ({
       animationType="slide"
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <View style={styles.modal}>
+      <TouchableOpacity
+        style={styles.overlay}
+        activeOpacity={1}
+        onPress={onClose}
+      >
+        <TouchableOpacity
+          activeOpacity={1}
+          style={styles.modal}
+        >
+          {/* 头部 */}
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>选择训练日</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
@@ -91,14 +59,61 @@ const DayPickerModal: React.FC<DayPickerModalProps> = ({
             </TouchableOpacity>
           </View>
           <Text style={styles.modalSubtitle}>选择一天的训练计划开始锻炼</Text>
-          <FlatList
-            data={days}
-            keyExtractor={(item) => item.dayOfWeek.toString()}
-            renderItem={renderDay}
-            contentContainerStyle={styles.list}
-          />
-        </View>
-      </View>
+
+          {/* 列表 */}
+          <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
+            {days.length === 0 ? (
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>暂无训练计划</Text>
+              </View>
+            ) : (
+              days.map((item) => {
+                const isToday = item.dayOfWeek === today;
+                return (
+                  <TouchableOpacity
+                    key={item.dayOfWeek}
+                    style={[styles.dayRow, isToday && styles.dayRowToday]}
+                    onPress={() => {
+                      onSelectDay(item);
+                      onClose();
+                    }}
+                    activeOpacity={0.7}
+                  >
+                    {/* 左侧：星期 */}
+                    <View style={styles.dayRowLeft}>
+                      <View style={[styles.dayBadge, isToday && styles.dayBadgeToday]}>
+                        <Text style={[styles.dayBadgeText, isToday && styles.dayBadgeTextToday]}>
+                          {dayNames[item.dayOfWeek]}
+                        </Text>
+                      </View>
+                    </View>
+
+                    {/* 中间：标题 */}
+                    <View style={styles.dayRowCenter}>
+                      <Text style={[styles.dayRowTitle, item.isRestDay && styles.restText]}>
+                        {item.title}
+                      </Text>
+                      {!item.isRestDay && item.exerciseCount > 0 && (
+                        <Text style={styles.dayRowMeta}>
+                          {item.exerciseCount}个动作 · {item.duration}分钟
+                        </Text>
+                      )}
+                    </View>
+
+                    {/* 右侧：标记 */}
+                    <View style={styles.dayRowRight}>
+                      {isToday && <Text style={styles.todayTag}>今天</Text>}
+                      {!item.isRestDay && (
+                        <Text style={styles.goArrow}>→</Text>
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                );
+              })
+            )}
+          </ScrollView>
+        </TouchableOpacity>
+      </TouchableOpacity>
     </Modal>
   );
 };
@@ -113,7 +128,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     borderTopLeftRadius: borderRadius.xl,
     borderTopRightRadius: borderRadius.xl,
-    maxHeight: '80%',
+    height: '70%',
     paddingBottom: 34,
   },
   modalHeader: {
@@ -141,9 +156,19 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.sm,
+    paddingBottom: spacing.sm,
   },
   list: {
-    padding: spacing.lg,
+    flex: 1,
+    paddingHorizontal: spacing.lg,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  emptyText: {
+    fontSize: fontSize.base,
+    color: colors.text.secondary,
   },
   dayRow: {
     flexDirection: 'row',
@@ -160,10 +185,9 @@ const styles = StyleSheet.create({
     borderLeftWidth: 3,
   },
   dayRowLeft: {
-    flexDirection: 'row',
+    width: 56,
+    justifyContent: 'center',
     alignItems: 'center',
-    width: 72,
-    gap: spacing.xs,
   },
   dayBadge: {
     backgroundColor: colors.background,
@@ -181,11 +205,6 @@ const styles = StyleSheet.create({
   },
   dayBadgeTextToday: {
     color: colors.text.inverse,
-  },
-  todayTag: {
-    fontSize: fontSize.xs,
-    color: colors.primary,
-    fontWeight: '600',
   },
   dayRowCenter: {
     flex: 1,
@@ -206,15 +225,13 @@ const styles = StyleSheet.create({
   },
   dayRowRight: {
     marginLeft: spacing.sm,
+    alignItems: 'center',
   },
-  restBadge: {
+  todayTag: {
     fontSize: fontSize.xs,
-    color: colors.text.secondary,
-    backgroundColor: colors.background,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: borderRadius.sm,
-    overflow: 'hidden',
+    color: colors.primary,
+    fontWeight: '600',
+    marginBottom: 2,
   },
   goArrow: {
     fontSize: fontSize.lg,
