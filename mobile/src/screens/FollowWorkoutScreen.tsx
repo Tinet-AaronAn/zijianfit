@@ -7,7 +7,6 @@ import {
   Alert,
   Dimensions,
   ScrollView,
-  BackHandler,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Video, { VideoRef } from 'react-native-video';
@@ -35,7 +34,6 @@ const FollowWorkoutScreen: React.FC<Props> = ({ route, navigation }) => {
   
   const [currentRound, setCurrentRound] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const videoRef = useRef<VideoRef>(null);
 
   const isStrengthTraining = session.type === 'strength';
@@ -43,27 +41,12 @@ const FollowWorkoutScreen: React.FC<Props> = ({ route, navigation }) => {
   const progress = (currentRound / session.targetRounds) * 100;
   const hasVideo = session.workoutCategory === 'upper-body' || session.workoutCategory === 'lower-body';
 
-  // 视频训练页面：解锁横屏，退出时恢复竖屏
+  // 页面退出时恢复竖屏
   useEffect(() => {
-    if (hasVideo) {
-      Orientation.unlockAllOrientations();
-    }
     return () => {
       Orientation.lockToPortrait();
     };
-  }, [hasVideo]);
-
-  // 全屏时按返回键退出全屏
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (isFullscreen) {
-        exitFullscreen();
-        return true;
-      }
-      return false;
-    });
-    return () => backHandler.remove();
-  }, [isFullscreen]);
+  }, []);
 
   // 判断训练分类
   const isUpperBody = session.workoutCategory === 'upper-body';
@@ -131,17 +114,13 @@ const FollowWorkoutScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const enterFullscreen = () => {
-    setIsFullscreen(true);
     Orientation.lockToLandscape();
-  };
-
-  const exitFullscreen = () => {
-    setIsFullscreen(false);
-    Orientation.lockToPortrait();
+    videoRef.current?.presentFullscreenPlayer();
   };
 
   const handleVideoEnd = () => {
-    exitFullscreen();
+    videoRef.current?.dismissFullscreenPlayer();
+    Orientation.lockToPortrait();
     console.log('视频播放完成，退出全屏并恢复竖屏');
   };
 
@@ -187,10 +166,10 @@ const FollowWorkoutScreen: React.FC<Props> = ({ route, navigation }) => {
           <Video
             ref={videoRef}
             source={{ uri: getVideoUrl(getWorkoutVideoUrl())! }}
-            style={isFullscreen ? styles.videoFullscreen : styles.video}
+            style={styles.video}
             controls={true}
             paused={false}
-            resizeMode={isFullscreen ? 'contain' : 'cover'}
+            resizeMode="contain"
             repeat={false}
             onEnd={handleVideoEnd}
             onError={(e) => {
@@ -198,8 +177,11 @@ const FollowWorkoutScreen: React.FC<Props> = ({ route, navigation }) => {
               Alert.alert('提示', '视频加载失败，请检查视频文件是否存在');
             }}
             onLoad={() => {
-              console.log('视频加载成功，自动进入横屏全屏');
+              console.log('视频加载成功，自动全屏播放');
               setTimeout(enterFullscreen, 300);
+            }}
+            onFullscreenPlayerWillDismiss={() => {
+              Orientation.lockToPortrait();
             }}
             bufferConfig={{
               minBufferMs: 1500,
@@ -324,14 +306,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
-  },
-  videoFullscreen: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: Dimensions.get('window').height, // 横屏时 window.height 变为宽度
-    height: Dimensions.get('window').width,
-    backgroundColor: '#000',
   },
   webviewHint: {
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
