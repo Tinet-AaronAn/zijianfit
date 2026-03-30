@@ -7,10 +7,11 @@ import {
   Alert,
   Dimensions,
   ScrollView,
+  BackHandler,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Video from 'react-native-video';
-import { WebView } from 'react-native-webview';
+import Video, { VideoRef } from 'react-native-video';
+import Orientation from 'react-native-orientation-locker';
 import { colors, fontSize, spacing, borderRadius, videoBaseUrl } from '../constants';
 
 type Props = NativeStackScreenProps<any, 'FollowWorkout'>;
@@ -33,13 +34,36 @@ const FollowWorkoutScreen: React.FC<Props> = ({ route, navigation }) => {
   const session = route.params as WorkoutSession;
   
   const [currentRound, setCurrentRound] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const videoRef = useRef<typeof Video>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const videoRef = useRef<VideoRef>(null);
 
   const isStrengthTraining = session.type === 'strength';
   const isCardioTraining = session.type === 'cardio';
   const progress = (currentRound / session.targetRounds) * 100;
+  const hasVideo = session.workoutCategory === 'upper-body' || session.workoutCategory === 'lower-body';
+
+  // 视频训练页面：解锁横屏，退出时恢复竖屏
+  useEffect(() => {
+    if (hasVideo) {
+      Orientation.unlockAllOrientations();
+    }
+    return () => {
+      Orientation.lockToPortrait();
+    };
+  }, [hasVideo]);
+
+  // 全屏时按返回键退出全屏
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (isFullscreen) {
+        exitFullscreen();
+        return true;
+      }
+      return false;
+    });
+    return () => backHandler.remove();
+  }, [isFullscreen]);
 
   // 判断训练分类
   const isUpperBody = session.workoutCategory === 'upper-body';
@@ -106,10 +130,19 @@ const FollowWorkoutScreen: React.FC<Props> = ({ route, navigation }) => {
     }
   };
 
+  const enterFullscreen = () => {
+    setIsFullscreen(true);
+    Orientation.lockToLandscape();
+  };
+
+  const exitFullscreen = () => {
+    setIsFullscreen(false);
+    Orientation.lockToPortrait();
+  };
+
   const handleVideoEnd = () => {
-    // 视频播放完成，继续循环播放（repeat=true 会自动重播）
-    // 不改变 isPlaying 状态，保持播放界面
-    console.log('视频一轮播放完成，继续循环');
+    exitFullscreen();
+    console.log('视频播放完成，退出全屏并恢复竖屏');
   };
 
   if (isCompleted) {
@@ -154,31 +187,27 @@ const FollowWorkoutScreen: React.FC<Props> = ({ route, navigation }) => {
           <Video
             ref={videoRef}
             source={{ uri: getVideoUrl(getWorkoutVideoUrl())! }}
-            style={styles.video}
+            style={isFullscreen ? styles.videoFullscreen : styles.video}
             controls={true}
-            paused={!isPlaying}
-            resizeMode="contain"
-            repeat={true}
+            paused={false}
+            resizeMode={isFullscreen ? 'contain' : 'cover'}
+            repeat={false}
             onEnd={handleVideoEnd}
             onError={(e) => {
               console.log('视频播放错误:', e);
               Alert.alert('提示', '视频加载失败，请检查视频文件是否存在');
             }}
             onLoad={() => {
-              console.log('视频加载成功');
-              setIsPlaying(true); // 自动播放
+              console.log('视频加载成功，自动进入横屏全屏');
+              setTimeout(enterFullscreen, 300);
+            }}
+            bufferConfig={{
+              minBufferMs: 1500,
+              maxBufferMs: 5000,
+              bufferForPlaybackMs: 1000,
+              bufferForPlaybackAfterRebufferMs: 1500,
             }}
           />
-          {/* 播放提示 */}
-          {!isPlaying && (
-            <TouchableOpacity
-              style={styles.playOverlay}
-              onPress={() => setIsPlaying(true)}
-            >
-              <Text style={styles.playIcon}>▶️</Text>
-              <Text style={styles.playText}>点击播放视频</Text>
-            </TouchableOpacity>
-          )}
         </View>
       ) : isCardio ? (
         // 有氧训练（跑步）：显示跑步提示
@@ -296,20 +325,13 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  playOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  playIcon: {
-    fontSize: 80,
-    marginBottom: spacing.md,
-  },
-  playText: {
-    fontSize: fontSize.lg,
-    color: colors.text.inverse,
-    fontWeight: '600',
+  videoFullscreen: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: Dimensions.get('window').height, // 横屏时 window.height 变为宽度
+    height: Dimensions.get('window').width,
+    backgroundColor: '#000',
   },
   webviewHint: {
     backgroundColor: 'rgba(0, 0, 0, 0.8)',

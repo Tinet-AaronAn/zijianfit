@@ -1,3 +1,5 @@
+jest.mock('@react-native/js-polyfills/error-guard', () => ({}), { virtual: true });
+
 jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: jest.fn(() => Promise.resolve()),
   getItem: jest.fn(() => Promise.resolve(null)),
@@ -55,4 +57,13 @@ jest.mock('@react-navigation/bottom-tabs', () => ({
     Navigator: ({ children }: { children: React.ReactNode }) => children,
     Screen: ({ children }: { children: React.ReactNode }) => children,
   }),
+}));
+
+jest.mock('react-native-orientation-locker', () => ({
+  unlockAllOrientations: jest.fn(),
+  lockToPortrait: jest.fn(),
+  lockToLandscape: jest.fn(),
+  getOrientation: jest.fn(),
+  addEventListener: jest.fn(),
+  removeEventListener: jest.fn(),
 }));
