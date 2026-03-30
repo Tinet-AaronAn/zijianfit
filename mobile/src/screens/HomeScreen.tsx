@@ -40,8 +40,11 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [dayPickerVisible, setDayPickerVisible] = useState(false);
 
-  const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-  const today = new Date().getDay();
+  // 后端 dayOfWeek: 1=周一 ... 7=周日
+  const dayNames: Record<number, string> = { 1: '周一', 2: '周二', 3: '周三', 4: '周四', 5: '周五', 6: '周六', 7: '周日' };
+  // JS getDay(): 0=周日, 1=周一 ... 6=周六 → 转换为后端格式 1-7
+  const jsDay = new Date().getDay();
+  const today = jsDay === 0 ? 7 : jsDay;
 
   useEffect(() => {
     loadPlans();

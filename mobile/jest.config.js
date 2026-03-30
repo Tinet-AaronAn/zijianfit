@@ -5,7 +5,7 @@ module.exports = {
     '\\.(jpg|ico|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|mp3|wav)$': 'identity-obj-proxy',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|@react-navigation|@react-native-async-storage|zustand)/)',
+    'node_modules/(?!(\\.pnpm/[^/]+/node_modules/)?(react-native|@react-native|@react-navigation|@react-native-async-storage|zustand|react-native-orientation-locker|@testing-library/react-native)(/|$))',
   ],
   testEnvironment: 'node',
   testPathIgnorePatterns: ['/node_modules/', '/android/', '/ios/'],

@@ -57,6 +57,3 @@ temp/
 # OS files
 Thumbs.db
 Desktop.ini
-
-# 视频文件（通过服务器直传，不走 git）
-backend/public/videos/*.mp4
