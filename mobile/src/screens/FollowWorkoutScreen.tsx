@@ -169,7 +169,7 @@ const FollowWorkoutScreen: React.FC<Props> = ({ route, navigation }) => {
             style={styles.video}
             controls={true}
             paused={false}
-            resizeMode="contain"
+            resizeMode="cover"
             repeat={false}
             onEnd={handleVideoEnd}
             onError={(e) => {
