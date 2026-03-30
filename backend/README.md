@@ -94,16 +94,6 @@ npm run prisma:studio
 | GET | `/api/plans/:planId` | 获取计划详情 | 可选 |
 | GET | `/api/plans/:planId/days/:dayOfWeek` | 获取某日训练详情 | 可选 |
 
-### 管理接口
-
-| 方法 | 路径 | 说明 | 认证 |
-|------|------|------|------|
-| POST | `/api/admin/seed` | 远程导入训练计划种子数据 | 无需 |
-
-> **`POST /api/admin/seed` 说明**：在服务器上远程导入训练计划数据，无需 SSH 登录。
-> 这是一个幂等操作，重复调用会先清除旧数据再重新导入。
-> 调用方式：`curl -X POST http://localhost:3001/api/admin/seed`
-
 ### 静态资源
 
 | 路径 | 说明 |
@@ -195,8 +185,7 @@ backend/
 │   │   └── rateLimit.ts       # 请求频率限制
 │   ├── routes/
 │   │   ├── auth.ts            # 认证路由（/api/auth/*）
-│   │   ├── plans.ts           # 训练计划路由（/api/plans/*）
-│   │   └── admin.ts           # 管理路由（/api/admin/seed）
+│   │   └── plans.ts           # 训练计划路由（/api/plans/*）
 │   ├── utils/
 │   │   └── response.ts        # 统一响应格式工具
 │   ├── app.ts                 # Koa 应用配置（中间件、路由注册、静态文件）
@@ -328,18 +317,8 @@ npx tsx prisma/seed.ts
 exit
 ```
 
-**方式 B：通过 HTTP API 远程导入（推荐，不需要进入容器）**
-```bash
-# 先确保迁移已执行
-docker compose exec backend npx prisma migrate deploy
-
-# 通过 HTTP API 远程导入训练计划数据
-curl -X POST http://localhost:3001/api/admin/seed
-# 返回 {"success":true,...} 表示成功
-```
-
 > ⚠️ **注意**：README 中此前的版本写了 `npx prisma db seed`，这是错误的。
-> 正确的命令是 `npx tsx prisma/seed.ts`（在容器内）或通过 `POST /api/admin/seed`（远程调用）。
+> 正确的命令是 `npx tsx prisma/seed.ts`（在容器内执行）。
 > 因为 package.json 中没有配置 `prisma.seed`，`npx prisma db seed` 会报错。
 
 #### 4. 上传视频文件
@@ -386,9 +365,6 @@ docker compose down
 # 更新部署（拉取最新代码 + 重建镜像）
 git pull
 docker compose up -d --build
-
-# 重新导入训练计划数据（通过 API）
-curl -X POST http://localhost:3001/api/admin/seed
 ```
 
 ## 环境要求

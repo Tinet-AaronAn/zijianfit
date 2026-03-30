@@ -86,9 +86,9 @@ const PROD_API_URL = 'http://www.flyflux.cn:3001/api';
 // 根据平台自动选择 API 地址
 const getBaseURL = () => {
   // 生产环境
-  if (__DEV__ === false) {
+  //if (__DEV__ === false) {
     return PROD_API_URL;
-  }
+  //}
 
   // 开发环境
   return DEV_API_URL;
@@ -98,3 +98,6 @@ export const apiConfig = {
   baseURL: getBaseURL(),
   timeout: 10000,
 };
+
+// 视频服务器地址（从 API 地址推导，去掉 /api 后缀）
+export const videoBaseUrl = apiConfig.baseURL.replace(/\/api$/, '');

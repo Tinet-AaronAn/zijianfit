@@ -11,7 +11,7 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Video from 'react-native-video';
 import { WebView } from 'react-native-webview';
-import { colors, fontSize, spacing, borderRadius } from '../constants';
+import { colors, fontSize, spacing, borderRadius, videoBaseUrl } from '../constants';
 
 type Props = NativeStackScreenProps<any, 'FollowWorkout'>;
 
@@ -46,14 +46,12 @@ const FollowWorkoutScreen: React.FC<Props> = ({ route, navigation }) => {
   const isLowerBody = session.workoutCategory === 'lower-body';
   const isCardio = session.workoutCategory === 'cardio';
 
-  // 获取视频URL（模拟器用10.0.2.2，真机用实际IP）
+  // 获取视频URL（从 apiConfig 自动推导服务器地址）
   const getVideoUrl = (path: string | undefined): string | null => {
     if (!path) return null;
     if (path.startsWith('/videos/')) {
-      const host = '10.0.2.2'; // 模拟器专用
-      return `http://${host}:3001${path}`;
+      return `${videoBaseUrl}${path}`;
     }
-    // B站链接或其他URL直接返回
     return path;
   };
 
