@@ -11,7 +11,6 @@ import { rateLimit } from './middleware/rateLimit';
 import { config } from './config';
 import authRoutes from './routes/auth';
 import plansRoutes from './routes/plans';
-import adminRoutes from './routes/admin';
 
 // 创建 Koa 应用
 const app = new Koa();
@@ -84,7 +83,5 @@ app.use(authRoutes.routes());
 app.use(authRoutes.allowedMethods());
 app.use(plansRoutes.routes());
 app.use(plansRoutes.allowedMethods());
-app.use(adminRoutes.routes());
-app.use(adminRoutes.allowedMethods());
 
 export default app;

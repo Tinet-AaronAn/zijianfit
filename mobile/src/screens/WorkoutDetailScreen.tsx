@@ -11,20 +11,15 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Video from 'react-native-video';
-import { colors, fontSize, spacing, borderRadius } from '../constants';
+import { colors, fontSize, spacing, borderRadius, videoBaseUrl } from '../constants';
 import api from '../services/api';
 
-// 获取完整的视频URL
+// 获取完整的视频URL（从 apiConfig 自动推导服务器地址，适配模拟器和真机）
 const getVideoUrl = (path: string | undefined): string | null => {
   if (!path) return null;
-  // 本地视频路径以 /videos/ 开头
   if (path.startsWith('/videos/')) {
-    // 模拟器访问主机需要使用 10.0.2.2
-    // 真机需要使用实际 IP
-    const host = '10.0.2.2'; // 模拟器专用
-    return `http://${host}:3001${path}`;
+    return `${videoBaseUrl}${path}`;
   }
-  // 其他情况返回原路径（如B站链接）
   return path;
 };
 
